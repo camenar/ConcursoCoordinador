@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#1F2A6E">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Concurso">
+<meta name="description" content="Materiales de preparación para el concurso de directivo docente — coordinación.">
+<title>Preparación Concurso · Coordinador</title>
+<style>
+:root{
+  --navy:#1F2A6E; --navy-d:#151d4f; --navy-l:#2f3d8f;
+  --orange:#E67E22; --bg:#f4f6fb; --card:#fff;
+  --gray:#5b6478; --line:#dde2ee; --ok:#1e8e5a;
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+body{font-family:Arial,Helvetica,sans-serif;background:var(--bg);color:#1c2233;line-height:1.55;
+  -webkit-text-size-adjust:100%}
+.wrap{max-width:840px;margin:0 auto;padding:0 16px}
+header{background:linear-gradient(135deg,var(--navy),var(--navy-l));color:#fff;
+  padding:calc(30px + env(safe-area-inset-top)) 0 26px}
+header .eyebrow{font-size:.68rem;letter-spacing:2.2px;text-transform:uppercase;opacity:.8;margin-bottom:9px}
+header h1{font-size:1.5rem;line-height:1.25}
+header p{font-size:.92rem;opacity:.9;margin-top:9px;max-width:560px}
+
+/* filtros */
+.filtros{display:flex;gap:8px;overflow-x:auto;padding:18px 0 4px;-webkit-overflow-scrolling:touch;
+  scrollbar-width:none}
+.filtros::-webkit-scrollbar{display:none}
+.chip{flex:0 0 auto;border:2px solid var(--line);background:#fff;color:var(--gray);border-radius:20px;
+  padding:8px 16px;font-size:.85rem;font-family:inherit;font-weight:bold;cursor:pointer;white-space:nowrap}
+.chip.on{background:var(--navy);border-color:var(--navy);color:#fff}
+
+/* tarjetas */
+.lista{padding:6px 0 10px}
+.item{display:block;text-decoration:none;color:inherit;background:var(--card);border-radius:13px;
+  padding:18px;margin-bottom:13px;box-shadow:0 2px 10px rgba(31,42,110,.07);
+  border-left:5px solid var(--orange);transition:transform .12s,box-shadow .12s}
+.item:active{transform:scale(.985)}
+@media(hover:hover){.item:hover{box-shadow:0 6px 18px rgba(31,42,110,.14)}}
+.item .top{display:flex;align-items:flex-start;gap:12px;margin-bottom:7px}
+.item .ico{flex:0 0 42px;height:42px;border-radius:11px;background:#eef1f9;display:flex;
+  align-items:center;justify-content:center;font-size:1.25rem}
+.item h2{font-size:1.05rem;color:var(--navy);line-height:1.3;flex:1}
+.item .resumen{font-size:.9rem;color:#39415a;margin-bottom:11px}
+.item .meta{display:flex;flex-wrap:wrap;gap:7px;align-items:center}
+.tag{font-size:.7rem;font-weight:bold;letter-spacing:.4px;text-transform:uppercase;
+  padding:3px 9px;border-radius:11px;background:#eef1f9;color:var(--navy)}
+.tag.o{background:#fdf0e2;color:#a8590a}
+.tag.v{background:#e9f6f0;color:var(--ok)}
+.tag.n{background:var(--orange);color:#fff}
+.ultimo{font-size:.72rem;color:var(--gray);margin-left:auto;font-style:italic}
+
+.vacio{background:#fff;border:2px dashed var(--line);border-radius:13px;padding:26px 18px;
+  text-align:center;color:var(--gray);font-size:.9rem}
+
+/* bloque de ayuda */
+.ayuda{background:#fff;border-radius:13px;padding:20px;margin:22px 0 8px;
+  box-shadow:0 2px 10px rgba(31,42,110,.07)}
+.ayuda h3{font-size:.95rem;color:var(--navy);margin-bottom:10px}
+.ayuda p{font-size:.87rem;color:#39415a;margin-bottom:9px}
+.ayuda code{background:#eef1f9;padding:2px 6px;border-radius:4px;font-size:.83rem;
+  font-family:ui-monospace,Menlo,Consolas,monospace;color:var(--navy);word-break:break-word}
+.ayuda pre{background:#1c2233;color:#e8ecf7;border-radius:9px;padding:14px;overflow-x:auto;
+  font-size:.78rem;line-height:1.5;margin:10px 0;font-family:ui-monospace,Menlo,Consolas,monospace}
+details summary{cursor:pointer;font-weight:bold;color:var(--navy);font-size:.92rem;padding:4px 0}
+details[open] summary{margin-bottom:9px}
+
+footer{text-align:center;color:var(--gray);font-size:.78rem;
+  padding:26px 16px calc(26px + env(safe-area-inset-bottom));line-height:1.7}
+@media(max-width:400px){header h1{font-size:1.28rem}.item{padding:15px}}
+</style>
+</head>
+<body>
+
+<header><div class="wrap">
+  <div class="eyebrow">Concurso de ingreso · Directivo docente</div>
+  <h1>Preparación para Coordinación</h1>
+  <p>Simulacros, bancos de preguntas y guías de estudio. Todo funciona sin conexión una vez cargado.</p>
+</div></header>
+
+<div class="wrap">
+  <div class="filtros" id="filtros"></div>
+  <div class="lista" id="lista"></div>
+
+  <div class="ayuda">
+    <details>
+      <summary>Cómo agregar un material nuevo</summary>
+      <p>Abre <code>index.html</code> en GitHub, busca el bloque <code>const RECURSOS</code> cerca del final del archivo y agrega un elemento más a la lista. Solo eso.</p>
+      <pre>{
+  titulo: "Nombre del material",
+  archivo: "nombre_del_archivo.html",
+  resumen: "Una línea que explique qué es.",
+  categoria: "Simulacros",
+  icono: "📝",
+  meta: ["40 preguntas", "60 min"],
+  nuevo: true
+}</pre>
+      <p><b>categoria</b> crea el filtro automáticamente: si escribes una categoría que no existe, aparece un botón nuevo arriba.</p>
+      <p><b>nuevo: true</b> le pone la etiqueta naranja. Quítalo cuando deje de ser reciente.</p>
+      <p>Sube el archivo <code>.html</code> del material al mismo nivel que <code>index.html</code> en el repositorio, confirma los cambios y espera un minuto. Recuerda el refresco forzado con <code>Cmd+Shift+R</code> si ves la versión vieja.</p>
+    </details>
+  </div>
+
+  <div class="ayuda">
+    <details>
+      <summary>Ponerlo como ícono en el celular</summary>
+      <p><b>iPhone:</b> abre la página en Safari, toca el botón de compartir y elige «Agregar a inicio». Queda como una aplicación, sin barra del navegador.</p>
+      <p><b>Android:</b> en Chrome, menú de tres puntos y «Agregar a pantalla principal».</p>
+      <p>Una vez abierto cada simulador, el avance y el historial se guardan en ese dispositivo. El teléfono y el computador llevan conteos separados.</p>
+    </details>
+  </div>
+</div>
+
+<footer>
+  Carlos Alberto Mena Romaña<br>
+  I.E. Merceditas Gómez Martínez · Itagüí, Antioquia
+</footer>
+
+<script>
+/* ══════════════════════════════════════════════════════════════
+   LISTA DE MATERIALES — edita solo aquí para agregar cosas nuevas
+   ══════════════════════════════════════════════════════════════ */
+const RECURSOS = [
+  {
+    titulo: "Simulacro completo · 140 preguntas",
+    archivo: "simulacro_140_coordinador.html",
+    resumen: "Banco original con las seis secciones de la prueba real: gestión académica, gestión institucional, lectura crítica, razonamiento cuantitativo, psicotécnica y conocimientos específicos.",
+    categoria: "Simulacros",
+    icono: "📋",
+    meta: ["140 preguntas", "240 min", "6 secciones"],
+    nuevo: true
+  },
+  {
+    titulo: "Banco de errores · Super Simulacro 12",
+    archivo: "simulador_prueba_directivo.html",
+    resumen: "Las 48 preguntas que fallaste en el simulacro presentado, con la clave contrastada contra la retroalimentación oficial y justificación de cada respuesta.",
+    categoria: "Simulacros",
+    icono: "🎯",
+    meta: ["48 preguntas", "clave verificada"],
+    nuevo: false
+  },
+  {
+    titulo: "Guía · El reflejo del docente",
+    archivo: "guia_gestion_institucional.html",
+    resumen: "El patrón que explica tus errores en gestión institucional, el vocabulario que distingue distractor de clave, la escalera de complejidad y los marcos que hay que tener firmes.",
+    categoria: "Guías de estudio",
+    icono: "🧭",
+    meta: ["lectura", "20 min", "4 ejercicios"],
+    nuevo: false
+  }
+];
+/* ══════════════ fin de la lista editable ══════════════ */
+
+var LS = {
+  get: function(k){ try { return JSON.parse(localStorage.getItem(k) || 'null'); } catch(e){ return null; } },
+  set: function(k, v){ try { localStorage.setItem(k, JSON.stringify(v)); } catch(e){} }
+};
+
+var visitas = LS.get('visitas') || {};
+var filtroActivo = 'Todos';
+
+function esc(t){
+  return String(t).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+function haceCuanto(ts){
+  var dias = Math.floor((Date.now() - ts) / 86400000);
+  if (dias === 0) return 'abierto hoy';
+  if (dias === 1) return 'abierto ayer';
+  if (dias < 30) return 'abierto hace ' + dias + ' días';
+  return 'abierto hace ' + Math.floor(dias / 30) + ' meses';
+}
+
+function pintarFiltros(){
+  var cats = ['Todos'];
+  RECURSOS.forEach(function(r){ if (cats.indexOf(r.categoria) === -1) cats.push(r.categoria); });
+  document.getElementById('filtros').innerHTML = cats.map(function(c){
+    return '<button class="chip' + (c === filtroActivo ? ' on' : '') + '" data-c="' + esc(c) + '">' + esc(c) + '</button>';
+  }).join('');
+  document.querySelectorAll('.chip').forEach(function(b){
+    b.addEventListener('click', function(){ filtroActivo = b.dataset.c; pintarFiltros(); pintarLista(); });
+  });
+}
+
+function pintarLista(){
+  var items = RECURSOS.filter(function(r){
+    return filtroActivo === 'Todos' || r.categoria === filtroActivo;
+  });
+  var cont = document.getElementById('lista');
+  if (!items.length){
+    cont.innerHTML = '<div class="vacio">Todavía no hay materiales en esta categoría.</div>';
+    return;
+  }
+  cont.innerHTML = items.map(function(r){
+    var tags = (r.meta || []).map(function(m, i){
+      return '<span class="tag' + (i === 0 ? ' o' : '') + '">' + esc(m) + '</span>';
+    }).join('');
+    if (r.nuevo) tags = '<span class="tag n">nuevo</span>' + tags;
+    var v = visitas[r.archivo] ? '<span class="ultimo">' + haceCuanto(visitas[r.archivo]) + '</span>' : '';
+    return '<a class="item" href="' + esc(r.archivo) + '" data-f="' + esc(r.archivo) + '">' +
+      '<div class="top"><div class="ico">' + (r.icono || '📄') + '</div><h2>' + esc(r.titulo) + '</h2></div>' +
+      '<div class="resumen">' + esc(r.resumen) + '</div>' +
+      '<div class="meta">' + tags + v + '</div></a>';
+  }).join('');
+  cont.querySelectorAll('.item').forEach(function(a){
+    a.addEventListener('click', function(){
+      visitas[a.dataset.f] = Date.now();
+      LS.set('visitas', visitas);
+    });
+  });
+}
+
+pintarFiltros();
+pintarLista();
+</script>
+</body>
+</html>
