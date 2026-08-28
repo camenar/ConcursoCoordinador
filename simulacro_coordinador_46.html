@@ -1,0 +1,778 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Simulacro Coordinador · 46 preguntas situacionales</title>
+<style>
+:root{
+  --navy:#1F2A6E;
+  --navy-soft:#2E3B8C;
+  --orange:#E67E22;
+  --orange-soft:#F39C12;
+  --ok:#1E8449;
+  --ok-bg:#E8F6ED;
+  --no:#B03A2E;
+  --no-bg:#FBEAE7;
+  --ink:#1B1B1F;
+  --muted:#5B6472;
+  --line:#DCE0E8;
+  --bg:#F4F6FA;
+  --card:#FFFFFF;
+  --r:14px;
+}
+*{box-sizing:border-box;}
+html,body{margin:0;padding:0;}
+body{
+  font-family:Arial, Helvetica, sans-serif;
+  background:var(--bg);
+  color:var(--ink);
+  line-height:1.55;
+  -webkit-text-size-adjust:100%;
+}
+.wrap{max-width:940px;margin:0 auto;padding:0 16px 64px;}
+
+/* ---------- Barra superior ---------- */
+.topbar{
+  position:sticky;top:0;z-index:20;
+  background:var(--navy);
+  color:#fff;
+  box-shadow:0 2px 10px rgba(31,42,110,.18);
+}
+.topbar .inner{
+  max-width:940px;margin:0 auto;padding:10px 16px;
+  display:flex;align-items:center;gap:12px;flex-wrap:wrap;
+}
+.brand{font-weight:bold;font-size:15px;letter-spacing:.3px;}
+.brand span{color:var(--orange-soft);}
+.counter{margin-left:auto;font-size:13px;opacity:.9;}
+.progress{height:4px;background:rgba(255,255,255,.22);width:100%;}
+.progress > i{
+  display:block;height:100%;width:0%;background:var(--orange);
+  transform-origin:left center;
+  transition:width 400ms ease;
+}
+
+/* ---------- Tarjetas ---------- */
+.card{
+  background:var(--card);
+  border:1px solid var(--line);
+  border-radius:var(--r);
+  padding:20px;
+  margin-top:18px;
+  box-shadow:0 1px 3px rgba(27,27,31,.05);
+}
+h1{font-size:26px;line-height:1.25;margin:0 0 6px;color:var(--navy);}
+h2{font-size:19px;margin:0 0 10px;color:var(--navy);}
+h3{font-size:15px;margin:0 0 8px;color:var(--navy);text-transform:uppercase;letter-spacing:.6px;}
+p{margin:0 0 12px;}
+.lead{color:var(--muted);font-size:15px;}
+
+.tag{
+  display:inline-block;background:#EDF0F8;color:var(--navy);
+  border-radius:999px;padding:4px 11px;font-size:12px;font-weight:bold;
+  margin:0 6px 6px 0;
+}
+.tag.warm{background:#FCEEE0;color:#A85B12;}
+
+/* ---------- Botones ---------- */
+.btn{
+  display:inline-block;border:0;cursor:pointer;
+  font-family:inherit;font-size:15px;font-weight:bold;
+  padding:13px 22px;border-radius:10px;
+  background:var(--navy);color:#fff;
+  transition:transform 160ms ease, opacity 160ms ease;
+}
+.btn:hover{transform:translateY(-2px);}
+.btn:active{transform:translateY(0);}
+.btn.alt{background:var(--orange);}
+.btn.ghost{background:#fff;color:var(--navy);border:2px solid var(--navy);padding:11px 20px;}
+.btn:disabled{opacity:.45;cursor:not-allowed;transform:none;}
+.btn:focus-visible, .opt:focus-visible{outline:3px solid var(--orange);outline-offset:2px;}
+.btnrow{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px;}
+
+/* ---------- Situación ---------- */
+.sit{
+  border-left:5px solid var(--orange);
+  background:#FBFCFE;
+  border-radius:0 var(--r) var(--r) 0;
+}
+.sit .head{
+  display:flex;align-items:center;gap:10px;cursor:pointer;
+  padding:14px 18px;
+}
+.sit .head b{font-size:14px;color:var(--navy);}
+.sit .head .chev{
+  margin-left:auto;color:var(--orange);font-size:18px;line-height:1;
+  transition:transform 220ms ease;
+}
+.sit.closed .chev{transform:rotate(-90deg);}
+.sit .body{padding:0 18px 16px;font-size:14.5px;color:#33383F;text-align:justify;}
+.sit.closed .body{display:none;}
+
+/* ---------- Pregunta ---------- */
+.qnum{font-size:12px;font-weight:bold;color:var(--orange);letter-spacing:1px;text-transform:uppercase;}
+.qtext{font-size:17px;font-weight:bold;color:var(--navy);margin:6px 0 16px;}
+.opts{display:flex;flex-direction:column;gap:10px;}
+.opt{
+  display:flex;gap:12px;align-items:flex-start;
+  width:100%;text-align:left;
+  font-family:inherit;font-size:15px;color:var(--ink);
+  background:#fff;border:2px solid var(--line);border-radius:12px;
+  padding:14px 15px;cursor:pointer;
+  transition:transform 160ms ease, border-color 160ms ease, background-color 160ms ease;
+}
+.opt:hover:not(:disabled){transform:translateX(3px);border-color:var(--navy-soft);}
+.opt .letter{
+  flex:0 0 28px;height:28px;border-radius:50%;
+  background:var(--navy);color:#fff;font-weight:bold;font-size:14px;
+  display:flex;align-items:center;justify-content:center;
+}
+.opt.sel{border-color:var(--navy);background:#F2F4FB;}
+.opt.right{border-color:var(--ok);background:var(--ok-bg);}
+.opt.right .letter{background:var(--ok);}
+.opt.wrong{border-color:var(--no);background:var(--no-bg);}
+.opt.wrong .letter{background:var(--no);}
+.opt:disabled{cursor:default;}
+
+/* ---------- Feedback ---------- */
+.fb{
+  margin-top:16px;border-radius:12px;padding:15px 16px;
+  font-size:14.5px;
+  opacity:0;transform:translateY(8px);
+  animation:rise 380ms ease forwards;
+}
+.fb.ok{background:var(--ok-bg);border:1px solid #B7E1C6;}
+.fb.no{background:var(--no-bg);border:1px solid #F0BFB8;}
+.fb .verdict{font-weight:bold;display:block;margin-bottom:6px;}
+.fb.ok .verdict{color:var(--ok);}
+.fb.no .verdict{color:var(--no);}
+@keyframes rise{to{opacity:1;transform:translateY(0);}}
+
+.fade{animation:fade 300ms ease;}
+@keyframes fade{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:translateY(0);}}
+
+/* ---------- Resultados ---------- */
+.score{
+  display:flex;align-items:center;gap:18px;flex-wrap:wrap;
+  padding:18px;border-radius:var(--r);
+  background:linear-gradient(135deg,var(--navy),var(--navy-soft));color:#fff;
+}
+.score .big{font-size:44px;font-weight:bold;line-height:1;}
+.score .of{font-size:14px;opacity:.85;}
+.score .pct{
+  margin-left:auto;background:var(--orange);border-radius:10px;
+  padding:10px 16px;font-size:22px;font-weight:bold;
+}
+table{width:100%;border-collapse:collapse;font-size:14px;margin-top:8px;}
+th,td{text-align:left;padding:9px 8px;border-bottom:1px solid var(--line);}
+th{background:#EDF0F8;color:var(--navy);font-size:12.5px;text-transform:uppercase;letter-spacing:.5px;}
+td.num{text-align:right;white-space:nowrap;font-weight:bold;}
+.bar{height:8px;background:#E6E9F0;border-radius:99px;overflow:hidden;margin-top:5px;}
+.bar > i{display:block;height:100%;background:var(--orange);transition:width 600ms ease;}
+
+.rev{border-left:4px solid var(--no);background:#fff;border-radius:0 10px 10px 0;padding:12px 14px;margin-top:12px;border-top:1px solid var(--line);border-right:1px solid var(--line);border-bottom:1px solid var(--line);}
+.rev .q{font-weight:bold;color:var(--navy);font-size:14.5px;margin-bottom:6px;}
+.rev .line{font-size:14px;margin:3px 0;}
+.rev .line b.bad{color:var(--no);}
+.rev .line b.good{color:var(--ok);}
+.rev .why{font-size:13.5px;color:#33383F;margin-top:7px;padding-top:7px;border-top:1px dashed var(--line);}
+
+.hint{font-size:13px;color:var(--muted);margin-top:10px;}
+.foot{text-align:center;font-size:12px;color:var(--muted);margin-top:28px;}
+.hidden{display:none !important;}
+
+@media (max-width:600px){
+  h1{font-size:22px;}
+  .qtext{font-size:16px;}
+  .opt{font-size:14.5px;padding:12px 13px;}
+  .card{padding:16px;}
+  .score .big{font-size:36px;}
+}
+@media (prefers-reduced-motion: reduce){
+  *,*::before,*::after{animation-duration:.001ms !important;animation-iteration-count:1 !important;transition-duration:.001ms !important;}
+  .opt:hover:not(:disabled),.btn:hover{transform:none;}
+}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="inner">
+    <div class="brand">Simulacro <span>Coordinador</span> · 46 preguntas</div>
+    <div class="counter" id="counter"></div>
+  </div>
+  <div class="progress"><i id="pbar"></i></div>
+</div>
+
+<div class="wrap">
+
+  <!-- INICIO -->
+  <section id="start">
+    <div class="card">
+      <h1>Casos situacionales de gestión directiva</h1>
+      <p class="lead">46 preguntas repartidas en 10 situaciones. Cada una evalúa un sub-eje distinto del rol de coordinador: gestión directiva, académica, administrativa y de la comunidad.</p>
+      <div>
+        <span class="tag">Gestión directiva</span>
+        <span class="tag">Gestión académica</span>
+        <span class="tag">Administrativa y financiera</span>
+        <span class="tag">Gestión de la comunidad</span>
+      </div>
+      <h3 style="margin-top:18px">Elige cómo practicar</h3>
+      <p class="lead">En <b>práctica guiada</b> ves la justificación después de cada respuesta. En <b>simulacro</b> respondes las 46 seguidas y revisas todo al final.</p>
+      <div class="btnrow">
+        <button class="btn" onclick="iniciar('guiada')">Práctica guiada</button>
+        <button class="btn alt" onclick="iniciar('simulacro')">Modo simulacro</button>
+      </div>
+      <p class="hint">Truco de examen: casi siempre gana la opción que genera <b>reflexión pedagógica colectiva</b> sobre la que solo organiza, informa o controla.</p>
+    </div>
+  </section>
+
+  <!-- QUIZ -->
+  <section id="quiz" class="hidden">
+    <div class="card sit" id="sitCard">
+      <div class="head" onclick="toggleSit()">
+        <b id="sitTitle"></b>
+        <span class="chev">▾</span>
+      </div>
+      <div class="body" id="sitBody"></div>
+    </div>
+
+    <div class="card" id="qCard">
+      <div class="qnum" id="qnum"></div>
+      <div class="qtext" id="qtext"></div>
+      <div class="opts" id="opts"></div>
+      <div id="fb"></div>
+      <div class="btnrow">
+        <button class="btn ghost" id="btnPrev" onclick="ir(-1)">Anterior</button>
+        <button class="btn" id="btnNext" onclick="ir(1)">Siguiente</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- RESULTADOS -->
+  <section id="results" class="hidden">
+    <div class="card">
+      <h2>Resultados</h2>
+      <div class="score">
+        <div>
+          <div class="big" id="rScore">0</div>
+          <div class="of">respuestas correctas de 46</div>
+        </div>
+        <div class="pct" id="rPct">0%</div>
+      </div>
+      <p class="lead" id="rMsg" style="margin-top:14px"></p>
+    </div>
+
+    <div class="card">
+      <h2>Desempeño por sub-eje</h2>
+      <table>
+        <thead><tr><th>Sub-eje temático</th><th style="width:90px">Aciertos</th></tr></thead>
+        <tbody id="rTable"></tbody>
+      </table>
+    </div>
+
+    <div class="card">
+      <h2>Revisión de las falladas</h2>
+      <div id="rWrong"></div>
+    </div>
+
+    <div class="btnrow">
+      <button class="btn" onclick="location.reload()">Repetir todo</button>
+      <button class="btn alt" onclick="repetirFalladas()">Repasar solo las falladas</button>
+    </div>
+  </section>
+
+  <p class="foot">Material de práctica · uso personal · Carlos Alberto Mena Romaña</p>
+</div>
+
+<script>
+/* ====================== DATOS ====================== */
+const SITUACIONES = [
+{
+ id:1, rango:"Preguntas 1 a 5", titulo:'Coordinadora Ramírez · I.E. "El Progreso"',
+ subeje:"Gestión directiva – Planeación y organización directiva",
+ aspecto:"El Coordinador favorece la formulación, revisión y actualización del PEI, el POA y el PMI, y promueve la reflexión de la comunidad educativa.",
+ texto:'La Coordinadora Ramírez enfrenta un desafío al iniciar el último trimestre. Históricamente, la actualización de los documentos de gestión (PEI, PMI, POA) ha sido un ejercicio documental liderado casi exclusivamente por el equipo directivo, lo que generó baja apropiación docente y nula participación de otros estamentos. Tras analizar los bajos resultados en pruebas externas y la apatía estudiantil, identifica una profunda desconexión entre los objetivos institucionales en el papel y las prácticas de aula. Su reto es diseñar una estrategia directiva que transforme la revisión del PMI y la formulación del POA en un proceso auténticamente participativo, nutrido de la reflexión pedagógica sistemática de los docentes, superando la simple formalidad administrativa y las reuniones tradicionales ineficaces.',
+ preguntas:[
+  {n:1, t:"Para transformar la revisión documental en un proceso que promueva la reflexión pedagógica, la estrategia más pertinente de la Coordinadora Ramírez debe:",
+   o:["Diseñar instrumentos estandarizados de recolección de información que los docentes aplicarán para sistematizar las propuestas de mejora y entregarlas al consejo académico.",
+      "Establecer comisiones docentes específicas para redactar cada componente del PMI, garantizando una distribución equitativa de las tareas administrativas y su posterior socialización.",
+      "Articular espacios de diálogo pedagógico por áreas académicas para analizar resultados de la autoevaluación, identificar causas y proponer acciones de mejora concretas."],
+   k:2, j:"C articula diálogo pedagógico para analizar, identificar causas y proponer: exactamente el reto de nutrir los documentos desde la reflexión docente. B perpetúa el enfoque documental que se quiere superar (repartir tareas de redacción). A es solo un medio procedimental: recoger datos no garantiza reflexión profunda."},
+  {n:2, t:"Frente a la desconexión identificada entre los documentos de gestión y las prácticas de aula, la Coordinadora debe priorizar una acción que favorezca la actualización del PEI:",
+   o:["Liderar jornadas pedagógicas con docentes centradas en el análisis de la coherencia entre los componentes misionales del PEI y las planeaciones de área.",
+      "Contratar una asesoría externa experta para realizar un diagnóstico institucional completo e indicar las modificaciones necesarias en la estructura del PEI.",
+      "Convocar reuniones informativas con padres de familia y estudiantes para exponer los ajustes requeridos al horizonte institucional, promoviendo su posterior validación formal."],
+   k:0, j:"A ataca directamente la desconexión: analizar la coherencia entre PEI y planeaciones promueve reflexión interna. C es socialización informativa, no formulación reflexiva. B terceriza el reto y elude generar el proceso interno de reflexión comunitaria."},
+  {n:3, t:"Para asegurar que el Plan Operativo Anual (POA) responda a las necesidades reales del contexto, la Coordinadora Ramírez debe impulsar un proceso para:",
+   o:["Revisar los indicadores de gestión de años anteriores y ajustar las metas del POA, optimizando los procesos administrativos para mejorar la eficiencia institucional general.",
+      "Desarrollar mesas de trabajo con los diferentes estamentos de la comunidad educativa para priorizar las metas del PMI que orientarán la asignación presupuestal.",
+      "Sistematizar las metas del PMI en un cronograma detallado de actividades, asignando responsables y recursos específicos para su ejecución durante la vigencia escolar."],
+   k:1, j:"B es la más completa: mesas con los estamentos para priorizar metas asegura que el POA responda al contexto y promueve reflexión comunitaria. C describe la acción técnica de cronograma, pero omite el paso previo de priorización contextual. A mira la eficiencia administrativa, no la participación."},
+  {n:4, t:"Al estructurar las jornadas de trabajo pedagógico para la revisión del PMI, el enfoque de la Coordinadora debe orientarse principalmente a:",
+   o:["Facilitar el análisis colectivo de las causas raíz de las problemáticas identificadas en la autoevaluación, promoviendo la formulación de objetivos de mejora viables.",
+      "Organizar grupos de discusión docente para debatir sobre las metodologías de enseñanza más innovadoras y su posible incorporación en los planes de estudio.",
+      "Presentar los resultados consolidados de la autoevaluación institucional y definir las líneas de acción prioritarias que los docentes deberán implementar en sus asignaturas."],
+   k:0, j:"A supera las reuniones tradicionales: análisis colectivo de causas raíz más formulación de objetivos genera apropiación. C es informativa y prescriptiva, contraria a la participación buscada. B es pedagógica pero se desvía del objetivo central (revisión del PMI desde la autoevaluación)."},
+  {n:5, t:"Para superar la apatía docente y la percepción del PMI como un requisito formal, la Coordinadora debe promover una cultura de mejoramiento institucional al:",
+   o:["Fomentar la socialización y el análisis periódico de los avances del PMI en las reuniones de área, articulando los resultados con la práctica pedagógica.",
+      "Vincular la participación activa de los docentes en la revisión del PMI con los procesos de evaluación de desempeño y la asignación de estímulos.",
+      "Implementar un sistema de seguimiento riguroso a las acciones de mejora, verificando mensualmente el cumplimiento de las metas del Plan Operativo Anual."],
+   k:0, j:"A convierte el PMI en herramienta viva al articularlo con la práctica pedagógica. B usa una medida externa (desempeño, estímulos) que produce cumplimiento formal, no reflexión genuina. C es control administrativo y no ataca la raíz de la apatía."}
+ ]
+},
+{
+ id:2, rango:"Preguntas 6 a 10", titulo:'Coordinador Fuentes · I.E. "El Roble"',
+ subeje:"Gestión directiva – Ejecución",
+ aspecto:"El Coordinador comunica a los equipos de trabajo los criterios y contenidos del plan de trabajo con claridad y antelación.",
+ texto:'El Coordinador Fuentes ingresa a la institución a mitad del año escolar. Detecta que, aunque existe un PMI robusto, la ejecución de las acciones pedagógicas es fragmentada: el equipo docente trabaja de manera aislada y muestra confusión respecto a las prioridades del semestre. Su reto inmediato es implementar la estrategia de "Nivelación de Aprendizajes" definida en el PMI, que impacta a todas las áreas y tiene criterios de priorización curricular y metodologías de evaluación formativa muy específicas. En el pasado, la difusión de planes se hacía mediante extensos documentos enviados por correo, escasamente leídos. Fuentes debe estructurar una socialización que asegure la comprensión profunda y anticipada de los criterios por parte de cada docente, garantizando una aplicación homogénea y efectiva.',
+ preguntas:[
+  {n:6, t:'Para asegurar la comprensión profunda de la estrategia de "Nivelación de Aprendizajes" y superar la lectura escasa de documentos, la acción directiva de Fuentes es:',
+   o:["Remitir el documento técnico del plan de nivelación a los docentes, solicitando un acuse de recibo formal para verificar la lectura del mismo.",
+      "Programar reuniones individuales con cada docente para revisar sus planeaciones de aula y ajustar los contenidos del plan de trabajo semestral según corresponda.",
+      "Dirigir jornadas de trabajo por grados, explicando detalladamente los criterios técnicos y metodológicos de la estrategia, resolviendo inquietudes específicas de los profesores."],
+   k:2, j:"C ataca la lectura escasa y la confusión: jornadas donde se explica y se resuelven inquietudes aseguran claridad. A repite el error pasado (remitir un documento) aunque añada acuse. B es personalizada pero logísticamente ineficiente para comunicar a equipos y se centra en el ajuste individual."},
+  {n:7, t:"Dado que la ejecución es fragmentada, el Coordinador Fuentes debe priorizar la comunicación del plan de trabajo a sus equipos procurando:",
+   o:["Establecer un cronograma de socialización del plan de trabajo semestral varias semanas antes del inicio de su implementación por parte del cuerpo docente.",
+      "Publicar el plan de trabajo semestral en la plataforma institucional el primer día de clases, permitiendo el acceso inmediato de todos los docentes.",
+      "Entregar los criterios de ejecución del plan de trabajo al consejo académico para su revisión y aprobación final, antes de la socialización docente."],
+   k:0, j:'El aspecto evaluado exige "claridad y antelación". A es la única que atiende explícitamente la anticipación. B (primer día de clases) no cumple el criterio de antelación. C es un paso administrativo previo, no la comunicación directa a los equipos.'},
+  {n:8, t:"Para garantizar una aplicación homogénea de la estrategia y atender la confusión detectada, el Coordinador Fuentes debe:",
+   o:["Solicitar a los docentes veteranos explicar a los nuevos integrantes del equipo los contenidos del plan de trabajo para fomentar el apoyo entre pares.",
+      "Enviar circulares periódicas durante el semestre recordando a los docentes las metas prioritarias del PMI y sus indicadores de cumplimiento.",
+      "Diseñar guías metodológicas claras que detallen los criterios de evaluación formativa y los contenidos priorizados del plan, asegurando su entrega oportuna al equipo."],
+   k:2, j:"C estandariza la información para todos mediante guías que especifican criterios y contenidos: es lo que produce homogeneidad. B solo recuerda metas, no explica criterios. A delega en pares una responsabilidad directiva y puede aumentar la fragmentación si las interpretaciones varían."},
+  {n:9, t:"Para transformar la socialización del plan (evitando la ineficacia de los correos) y asegurar la apropiación de los criterios, el Coordinador debe:",
+   o:["Realizar una presentación magistral al inicio del semestre con todos los docentes, resumiendo los puntos clave del plan de trabajo y sus objetivos.",
+      "Orientar mesas de trabajo pedagógico por áreas para analizar los contenidos y criterios del plan, verificando la comprensión de las acciones a implementar.",
+      "Crear un repositorio digital con todos los documentos del plan de trabajo y los formatos de seguimiento, facilitando la consulta permanente del personal docente."],
+   k:1, j:"B es la estrategia activa: analizar en mesas y verificar comprensión implica diálogo y retroalimentación. A sigue siendo exposición unidireccional. C reproduce el problema original (documentos extensos), solo que organizados."},
+  {n:10, t:"La comunicación más efectiva de los contenidos y criterios del plan, considerando que el equipo docente trabaja de manera aislada, requiere al Coordinador:",
+   o:["Modelar la aplicación de los criterios metodológicos del plan en sesiones prácticas con los jefes de área, quienes replicarán la información a sus equipos.",
+      "Distribuir un formulario de autoevaluación para que cada docente verifique su nivel de apropiación de los contenidos del plan de trabajo antes de ejecutarlo.",
+      "Auditar las planeaciones de aula de los docentes al finalizar el primer mes, retroalimentando los posibles desvíos respecto al plan de trabajo institucional."],
+   k:0, j:"A es la forma más avanzada de comunicar con claridad: modelar va más allá de explicar y asegura una réplica fiel a través de los jefes de área. C es ejecución y control (auditar), no comunicación anticipada. B mide percepción del docente, no garantiza que la transmisión fuera clara."}
+ ]
+},
+{
+ id:3, rango:"Preguntas 11 a 15", titulo:'Coordinador Pérez · I.E. "La Esperanza"',
+ subeje:"Gestión administrativa y financiera – Administración de recursos",
+ aspecto:"El Coordinador apoya el proceso anual de autoevaluación institucional y el desarrollo del PMI.",
+ texto:'El Coordinador Pérez asume dinamizar la fase de autoevaluación institucional. Históricamente el proceso se percibe como carga burocrática que consume tiempo docente y genera volúmenes de papelería, con un PMI desarticulado y de baja apropiación. El rectorado fue claro: el presupuesto para gastos operativos y materiales es mínimo este año. Su desafío es doble: apoyar metodológicamente el proceso y gestionar los recursos para hacerlo viable. Debe garantizar información válida y participación docente usando eficientemente el tiempo de las jornadas pedagógicas (recurso humano) y migrando los instrumentos a formatos digitales gratuitos (recurso tecnológico/financiero), demostrando que una gestión administrativa eficiente fortalece el desarrollo del PMI.',
+ preguntas:[
+  {n:11, t:"Para apoyar la autoevaluación gestionando eficientemente el recurso tiempo docente (jornadas pedagógicas), la acción más pertinente del Coordinador Pérez es:",
+   o:["Usar las reuniones de área para aplicar encuestas extensas, recogiendo la percepción detallada de todos los docentes sobre la gestión institucional.",
+      "Optimizar las jornadas pedagógicas, enfocando el análisis docente en los indicadores críticos de la autoevaluación que impactan directamente el aprendizaje estudiantil.",
+      "Designar comisiones específicas de docentes para tabular los resultados de la autoevaluación fuera del horario lectivo, agilizando la entrega de informes."],
+   k:1, j:'B gestiona el tiempo enfocándolo en lo relevante y supera la percepción de "carga burocrática". A usa el tiempo pero lo destina a encuestas extensas: repite el problema. C usa tiempo fuera del horario lectivo, lo que aumenta la resistencia en vez de optimizar el tiempo existente.'},
+  {n:12, t:"Frente a la restricción presupuestal y la generación excesiva de papelería, el Coordinador debe apoyar el proceso de autoevaluación al:",
+   o:["Implementar formularios digitales gratuitos para la recolección y tabulación automática de datos, reduciendo el gasto de papelería y optimizando el tiempo.",
+      "Solicitar donaciones de papel a los padres de familia para imprimir los instrumentos de autoevaluación, garantizando la participación de toda la comunidad.",
+      "Reducir el número de instrumentos de autoevaluación aplicados a los estudiantes, concentrando el análisis en los resultados de las pruebas externas."],
+   k:0, j:"A responde al reto de escasez con administración de recursos tecnológicos gratuitos, optimizando dinero y tiempo. B busca recursos externos en vez de gestionar los existentes. C reduce papel a costa de la calidad de la autoevaluación, no por eficiencia administrativa."},
+  {n:13, t:"Para que la gestión de recursos realmente apoye el desarrollo del PMI, la acción fundamental del Coordinador Pérez es:",
+   o:["Presentar al consejo directivo un informe detallado de los ahorros logrados al digitalizar la autoevaluación, justificando la gestión administrativa del coordinador.",
+      "Archivar digitalmente las evidencias del PMI, facilitando el acceso a la información para futuras auditorías de calidad y procesos de certificación externos.",
+      "Facilitar el análisis de los datos de autoevaluación (recogidos eficientemente) para que los docentes propongan acciones de PMI viables y contextualizadas."],
+   k:2, j:"C conecta la gestión de recursos con el desarrollo pedagógico del plan: los datos bien recogidos alimentan propuestas docentes. A y B son acciones administrativas válidas, pero son resultado o consecuencia posterior, no apoyo directo al desarrollo del PMI."},
+  {n:14, t:'Para transformar la percepción de "carga burocrática" y superar la resistencia docente, el Coordinador apoya el PMI mediante la administración de recursos al:',
+   o:["Demostrar al equipo docente cómo la optimización del tiempo en la autoevaluación permite dedicar más espacio al análisis pedagógico del PMI.",
+      "Establecer un cronograma estricto para la autoevaluación, asegurando que los docentes cumplan las fechas de entrega de evidencias y avancen en el PMI.",
+      "Exigir a los docentes el uso de las herramientas digitales seleccionadas por la coordinación para registrar las actividades del Plan de Mejoramiento Institucional."],
+   k:0, j:"A aborda la percepción y la resistencia (el problema de fondo) mostrando que gestionar el tiempo tiene un beneficio pedagógico directo. B y C imponen control (cronograma estricto, exigir), lo que probablemente aumenta la sensación de carga burocrática."},
+  {n:15, t:"El apoyo del Coordinador al desarrollo del PMI, desde la administración de recursos y dadas las limitaciones institucionales, debe enfocarse en:",
+   o:["Gestionar la adquisición de un software especializado para el seguimiento del PMI, buscando financiación externa para suplir las carencias presupuestales.",
+      "Priorizar el uso de los recursos pedagógicos (aulas, medios audiovisuales) para las jornadas de trabajo colectivo del PMI, garantizando su disponibilidad oportuna.",
+      "Elaborar el documento final del Plan de Mejoramiento Institucional, consolidando las propuestas docentes recogidas durante las diferentes fases de la autoevaluación."],
+   k:1, j:"B administra los recursos existentes (aulas, medios) para las jornadas del PMI: apoyo directo desde el sub-eje. A busca recursos nuevos, no administra los actuales. C es una función directiva de elaboración, no de apoyo mediante administración de recursos."}
+ ]
+},
+{
+ id:4, rango:"Preguntas 16 a 20", titulo:"Coordinadora Salas · novedades de personal",
+ subeje:"Gestión administrativa y financiera – Gestión del talento humano",
+ aspecto:"El Coordinador controla, reporta oportunamente al rector y organiza la atención de las novedades de personal docente y administrativo.",
+ texto:'La Coordinadora Salas inicia mayo con un reto en gestión del talento humano. Una docente de grado quinto solicita licencia no remunerada de tres semanas por motivos personales imprevistos; simultáneamente, el docente de ciencias de bachillerato presenta incapacidad médica de origen común por 10 días. La rectoría, ubicada en la sede principal, le delegó la responsabilidad de manejar la continuidad del servicio, pero los reemplazos temporales suelen tardar. Salas debe activar los canales administrativos para reportar formalmente las novedades al rector y asegurar el registro en el sistema; además, debe organizar la atención de los grupos afectados con el personal docente y directivo disponible en la sede, evitando la interrupción del proceso formativo.',
+ preguntas:[
+  {n:16, t:"Ante las novedades de personal docente presentadas, la primera acción administrativa de la Coordinadora Salas, en coherencia con su función de control, es:",
+   o:["Organizar el cubrimiento de las horas lectivas con docentes de la misma área, garantizando la continuidad del servicio educativo en los grupos.",
+      "Radicar formalmente las novedades de personal ante el rector, adjuntando los soportes físicos para iniciar el trámite administrativo con la entidad territorial.",
+      "Contactar a la entidad prestadora de salud para validar la incapacidad médica, asegurando la veracidad de la información antes de reportar la novedad."],
+   k:1, j:'B es la acción central del aspecto evaluado ("controla y reporta oportunamente al rector"): radicar con soportes activa la gestión de la novedad. A es organizar la atención, función posterior al reporte. C es verificación, pero B incluye el reporte inmediato al rector.'},
+  {n:17, t:'Para "organizar la atención" de los grupos afectados, garantizando la continuidad pedagógica mientras se gestionan los reemplazos, la Coordinadora debe:',
+   o:["Asumir personalmente las horas de clase de los docentes ausentes, demostrando liderazgo pedagógico mientras se gestiona el reemplazo con la secretaría.",
+      "Distribuir las horas vacantes entre los docentes del mismo grado, ajustando temporalmente la carga académica para atender la contingencia administrativa.",
+      "Diseñar un plan de contingencia pedagógica, asignando temporalmente docentes de apoyo y directivos para garantizar la atención de los grupos afectados."],
+   k:2, j:"C es la estrategia organizacional adecuada y usa el talento humano disponible que menciona la situación. B puede generar sobrecarga y no es una solución integral. A (asumir personalmente) es reactiva y logísticamente insostenible para la coordinación."},
+  {n:18, t:'La función de "controlar" las novedades de personal, como la licencia y la incapacidad, implica por parte del Coordinador:',
+   o:["Llevar un registro sistemático y actualizado de las ausencias del personal, verificando los soportes y las fechas de reincorporación de los docentes.",
+      "Evaluar el impacto pedagógico de las ausencias en el rendimiento académico de los estudiantes, informando los hallazgos al consejo académico.",
+      "Dialogar con los docentes ausentes para entender los motivos de la novedad, ofreciendo apoyo institucional para facilitar su pronto regreso a labores."],
+   k:0, j:'A define con precisión técnica el "controlar": registro sistemático, verificación de soportes y fechas. B es gestión académica. C pertenece al bienestar laboral, no al control administrativo requerido.'},
+  {n:19, t:'El "reporte oportuno" de las novedades al rector es una acción crucial de la gestión del talento humano porque permite:',
+   o:["Consolidar al final del mes todas las novedades de personal en un solo informe, optimizando el tiempo administrativo del rector y la coordinación.",
+      "Esperar la confirmación de la entidad territorial sobre la novedad antes de comunicar la situación al rector, evitando alarmas administrativas innecesarias.",
+      "Informar al rector de manera inmediata sobre las ausencias, permitiendo la gestión ágil de los reemplazos y la toma de decisiones administrativas."],
+   k:2, j:'C explica la finalidad del reporte oportuno: informar de inmediato para permitir gestión ágil. A ("al final del mes") es la antítesis de oportuno. B retrasa el reporte e impide decisiones rápidas como la asignación de reemplazos.'},
+  {n:20, t:"Frente al doble reto de gestionar lo administrativo y lo pedagógico, la Coordinadora Salas demuestra una gestión integral del talento humano al:",
+   o:["Priorizar la organización pedagógica de los grupos, dejando el reporte administrativo de las novedades para el final de la jornada escolar.",
+      "Articular el reporte formal al rector con la implementación del plan de cobertura pedagógica, asegurando la respuesta integral a la novedad.",
+      "Delegar en la secretaría académica la organización de los horarios de reemplazo, concentrándose en el reporte de las novedades al sistema."],
+   k:1, j:'B maneja ambas dimensiones simultáneamente (controlar/reportar y organizar). A incumple el deber de reportar oportunamente al dejarlo para el final. C evade una responsabilidad explícita del coordinador (organizar la atención), fragmentando la respuesta.'}
+ ]
+},
+{
+ id:5, rango:"Preguntas 21 a 25", titulo:'Coordinadora Gómez · I.E. "Los Almendros"',
+ subeje:"Gestión de la comunidad – Comunidad institucional",
+ aspecto:"El Coordinador utiliza diferentes estrategias de comunicación con la comunidad educativa para promover espacios de participación.",
+ texto:'La Coordinadora Gómez identifica apatía generalizada de los padres de familia: la asistencia a entrega de informes es alta, pero la participación en el Consejo de Padres o las comisiones de evaluación es casi nula. La comunicación se ha limitado a circulares impresas que los estudiantes extravían y a un blog institucional raramente actualizado. La institución debe iniciar la actualización del Manual de Convivencia, mandato normativo que exige la intervención de todos los estamentos. Su reto es diseñar estrategias de comunicación efectivas y bidireccionales, superando la comunicación informativa unidireccional y movilizando a padres, estudiantes y docentes. Necesita diversificar canales (digitales y analógicos) y segmentar los mensajes para que la convocatoria motive una intervención sustancial.',
+ preguntas:[
+  {n:21, t:"Para superar la ineficacia de las circulares impresas y promover la participación de los padres en la actualización, la Coordinadora debe:",
+   o:["Establecer un sistema de mensajería digital instantánea para difundir las convocatorias y las propuestas de ajuste al Manual de Convivencia.",
+      "Diseñar encuestas de opinión digitales para recoger las percepciones de los padres sobre el Manual, garantizando el anonimato y facilitando la tabulación.",
+      "Realizar llamadas telefónicas individuales a los padres de familia que no asisten, informando sobre la importancia de su participación en el proceso."],
+   k:1, j:"B es la estrategia más directa para promover participación: recoge percepciones, es decir, hay retorno del padre. A es difusión de información, necesaria pero no garantiza participación. C es reactiva e informativa, no una estrategia proactiva de participación masiva."},
+  {n:22, t:"Considerando la necesidad de movilizar al estamento estudiantil, la estrategia de comunicación más efectiva para fomentar su participación activa es:",
+   o:["Crear buzones de sugerencias físicos en puntos estratégicos del colegio para que los estudiantes depositen sus ideas sobre la convivencia escolar.",
+      "Organizar debates dirigidos en las aulas de clase sobre las normas actuales, sistematizando los aportes estudiantiles para la revisión del Manual.",
+      "Convocar al consejo estudiantil para delegar la recolección de propuestas de sus compañeros, optimizando los canales de representación establecidos."],
+   k:1, j:"B usa un espacio pedagógico (el aula) para promover participación activa y sistematiza los aportes. A es una estrategia pasiva. C centraliza en los representantes y limita los espacios para toda la comunidad estudiantil."},
+  {n:23, t:'Para responder al reto de "diversificar los canales" y asegurar una comunicación "bidireccional", la Coordinadora Gómez debe:',
+   o:["Desarrollar una campaña de expectativa en las redes sociales de la institución, invitando a los padres a las reuniones de socialización del Manual.",
+      "Publicar los avances del ajuste del Manual en el blog institucional y en las carteleras, promoviendo la transparencia del proceso de actualización.",
+      "Implementar una estrategia multicanal (digital y analógica) que informe los avances y facilite la recepción de aportes de todos los estamentos."],
+   k:2, j:"C es la más integral y responde al reto de diversificar; crucialmente incluye la recepción de aportes, que es lo bidireccional. A y B son estrategias informativas unidireccionales."},
+  {n:24, t:'Dado que la convocatoria debe "motivar una intervención sustancial", la estrategia de comunicación más pertinente para superar la apatía de los padres es:',
+   o:["Enviar comunicaciones segmentadas a los padres, explicando cómo los ajustes al Manual impactarán positivamente la formación y seguridad de sus hijos.",
+      "Citar a los padres de familia que presentan mayores dificultades de convivencia para escuchar sus opiniones sobre la pertinencia del Manual.",
+      "Usar la entrega de informes académicos para distribuir el borrador del nuevo Manual, solicitando a los padres su firma de recibido."],
+   k:0, j:"A segmenta y apela a la relevancia personal (el impacto en sus hijos) para motivar. C es informativa y administrativa (firma). B es focalizada en un grupo con dificultades, no una estrategia para toda la comunidad."},
+  {n:25, t:"Para asegurar la participación del estamento docente en la actualización del Manual, la Coordinadora debe utilizar como estrategia de comunicación:",
+   o:["Utilizar las reuniones de área para aplicar instrumentos de diagnóstico sobre la convivencia, recogiendo insumos técnicos para la actualización del Manual.",
+      "Solicitar a los docentes que informen a los padres de familia sobre la importancia de participar en la actualización del Manual.",
+      "Pedir a los docentes que envíen por correo electrónico sus sugerencias individuales para el Manual, consolidando un documento maestro de propuestas."],
+   k:0, j:"A es comunicación interna estructurada que promueve la participación docente y recoge insumos técnicos. C es una consulta simple, menos estructurada. B usa a los docentes como canal hacia los padres, pero no promueve su propia participación."}
+ ]
+},
+{
+ id:6, rango:"Preguntas 26 a 30", titulo:'Coordinadora Rivas · I.E. "El Manantial"',
+ subeje:"Gestión de la comunidad – Interacción con la comunidad y el entorno",
+ aspecto:"El Coordinador conoce e incorpora en la planeación y ejecución institucional las características sociales, culturales y económicas de la comunidad.",
+ texto:'La Coordinadora Rivas lidera una institución en una comunidad con economía predominantemente informal, basada en la agricultura familiar y la artesanía local. Históricamente el PEI ha promovido un énfasis en "Tecnologías de la Información", pero la deserción en los grados superiores es alta. Rivas identifica una desconexión: los proyectos de emprendimiento escolar se centran en desarrollo de software y comercio digital, ignorando el contexto económico y cultural; estudiantes y familias no perciben valor en esas competencias. Su reto es reorientar la planeación y ejecución de los proyectos transversales e impulsar una revisión curricular que integre las características sociales y culturales del entorno, articulando saberes tradicionales con competencias académicas formales.',
+ preguntas:[
+  {n:26, t:"Para reorientar la planeación institucional (PEI) y responder al contexto económico, la Coordinadora Rivas debe:",
+   o:["Gestionar alianzas con empresas tecnológicas externas para ofrecer becas a estudiantes, adaptando la oferta educativa a las demandas del mercado laboral global.",
+      "Realizar un diagnóstico de las competencias digitales de los docentes, ajustando el énfasis tecnológico del PEI a las capacidades instaladas en la institución.",
+      "Orientar la inclusión de los saberes artesanales locales en el currículo, articulándolos con las competencias básicas definidas en el Proyecto Educativo Institucional."],
+   k:2, j:"C incorpora las características culturales y económicas (saberes artesanales) al currículo: es la acción de planeación pertinente. A ignora el contexto local y mira el mercado global. B ajusta según capacidades internas, no según las características de la comunidad."},
+  {n:27, t:"Para que la ejecución de los proyectos pedagógicos productivos sea pertinente, la Coordinadora debe:",
+   o:["Diseñar un nuevo proyecto transversal enfocado en el comercio digital, capacitando a los estudiantes para vender las artesanías locales a través de internet.",
+      "Fomentar el desarrollo de proyectos pedagógicos productivos basados en la vocación agrícola y artesanal, integrando los conocimientos formales de la escuela.",
+      "Mantener el énfasis en tecnologías de la información, argumentando que los estudiantes requieren competencias globales para superar las limitaciones de la economía local."],
+   k:1, j:"B aborda la ejecución incorporando la vocación local como base de los proyectos. A menciona las artesanías pero las subordina al comercio digital, el enfoque que ya generaba desconexión. C insiste en el modelo que produce deserción."},
+  {n:28, t:'Para "conocer" las características del entorno (sociales, económicas), la estrategia prioritaria de la Coordinadora Rivas debe ser:',
+   o:["Aplicar encuestas a los estudiantes sobre sus intereses tecnológicos, ajustando los proyectos transversales a sus preferencias personales para aumentar la motivación.",
+      "Revisar los informes académicos de años anteriores para identificar las áreas con mayor reprobación, ajustando la intensidad horaria del plan de estudios.",
+      "Establecer espacios de diálogo con líderes locales y familias para comprender las dinámicas económicas y culturales, usándolas como insumo curricular."],
+   k:2, j:'El aspecto inicia con "conoce". C es la única estrategia directa para conocer el entorno (diálogo con líderes y familias). A indaga preferencias individuales, no características socioeconómicas. B analiza datos académicos internos, no el entorno.'},
+  {n:29, t:"Para abordar la alta deserción escolar (el problema central), la Coordinadora debe incorporar el contexto al:",
+   o:["Fortalecer la articulación de la institución con el sector empresarial tecnológico, facilitando pasantías para los estudiantes con mejor desempeño en el área.",
+      "Ajustar los proyectos de emprendimiento para que respondan a la economía local, aumentando la pertinencia de la formación y el sentido de utilidad.",
+      "Incrementar la exigencia en los proyectos de tecnología, preparando mejor a los estudiantes para las pruebas de estado y el ingreso a la universidad."],
+   k:1, j:"La deserción se debe a la falta de pertinencia. B ataca esa causa aumentando el sentido de utilidad para los estudiantes. A y C profundizan la desconexión con el contexto, que es la raíz del problema."},
+  {n:30, t:'La acción directiva que mejor demuestra la "incorporación" del contexto en la "planeación institucional" es:',
+   o:["Liderar la ejecución de ferias de emprendimiento digital, invitando a los artesanos locales para que observen las nuevas tendencias del mercado global.",
+      "Organizar la participación de los docentes en capacitaciones sobre software avanzado, actualizando la planeación del área de tecnología según las nuevas herramientas.",
+      "Promover la revisión del PEI, incluyendo las prácticas culturales y económicas del entorno en la planeación de los proyectos pedagógicos transversales."],
+   k:2, j:"C es acción de planeación (revisión del PEI) que incorpora el contexto. A es ejecución e impone una visión digital a la comunidad. B es planeación interna de capacitación, sin relación con las características de la comunidad."}
+ ]
+},
+{
+ id:7, rango:"Preguntas 31 a 35", titulo:'Coordinador Andrade · I.E. "Nuevos Horizontes"',
+ subeje:"Gestión académica – Pedagogía y didáctica",
+ aspecto:"El Coordinador organiza, orienta y retroalimenta el trabajo pedagógico de los docentes para asegurar la aplicación del enfoque pedagógico del PEI.",
+ texto:'El Coordinador Andrade enfrenta una discrepancia en la gestión académica. El PEI define un enfoque basado en la indagación y el aprendizaje experiencial, promoviendo la autonomía del estudiante. Sin embargo, al revisar las prácticas de aula observa que muchos docentes mantienen un modelo transmisivo-receptivo, centrado en la exposición magistral y la evaluación sumativa memorística; los resultados muestran baja apropiación de competencias. Aunque las planeaciones mencionan el trabajo por proyectos, la aplicación didáctica es superficial y los docentes expresan confusión sobre cómo evaluar formativamente. Su reto es organizar el acompañamiento pedagógico de manera sistemática, con seguimiento y orientación que muevan al equipo de una simulación metodológica a una transformación real.',
+ preguntas:[
+  {n:31, t:"Para organizar el acompañamiento pedagógico y superar la simulación metodológica, la acción prioritaria del Coordinador Andrade debe ser:",
+   o:["Designar a los jefes de área para verificar el cumplimiento del enfoque en las planeaciones, asegurando la alineación documental con el PEI.",
+      "Establecer un cronograma de observación de aula para todos los docentes, registrando las fallas metodológicas para el informe de evaluación anual.",
+      "Estructurar visitas de aula formativas y sistemáticas, centradas en la didáctica del enfoque experiencial, para identificar necesidades de apoyo docente."],
+   k:2, j:"C ataca la aplicación superficial con visitas formativas centradas en la didáctica. A se queda en lo documental, que la situación ya describe como problemático (se simula en el papel). B tiene fin de control sumativo (registrar fallas), no de organización del apoyo pedagógico."},
+  {n:32, t:"Ante la confusión docente sobre la evaluación formativa (parte del enfoque PEI), la estrategia de orientación más efectiva del Coordinador es:",
+   o:["Solicitar a los docentes la entrega de planes de mejora individuales, comprometiéndolos a implementar el enfoque pedagógico institucional en el aula.",
+      "Dirigir talleres pedagógicos prácticos sobre el aprendizaje experiencial, modelando estrategias de enseñanza y evaluación formativa alineadas al PEI.",
+      "Remitir a los docentes a lecturas teóricas sobre el aprendizaje por indagación, solicitando ensayos que resuman los conceptos pedagógicos clave."],
+   k:1, j:'B responde a la función de "orientar": talleres prácticos que modelan estrategias resuelven la confusión. C es orientación teórica que no cierra la brecha práctica. A es una acción administrativa que exige compromiso sin ofrecer la orientación necesaria.'},
+  {n:33, t:"Tras observar las prácticas transmisivas, la estrategia de retroalimentación más adecuada para asegurar la aplicación del PEI es:",
+   o:["Entregar a cada docente un informe escrito con las debilidades observadas en el aula, solicitando un ajuste inmediato a la práctica.",
+      "Generar espacios de diálogo pedagógico individual con los docentes observados, promoviendo la reflexión sobre la coherencia entre su práctica y el PEI.",
+      "Realizar reuniones grupales con los docentes para exponer los errores metodológicos comunes detectados durante las observaciones de las clases."],
+   k:1, j:"B describe retroalimentación formativa: el diálogo permite al docente entender la brecha y alinear su práctica. A es directiva pero menos eficaz para una transformación genuina. C socializa fallas, no es retroalimentación personalizada."},
+  {n:34, t:"Para asegurar la aplicación real del enfoque experiencial (PEI) y superar la superficialidad, la estrategia directiva más idónea es:",
+   o:["Exigir que todas las planeaciones de área incluyan una sección específica que describa el enfoque pedagógico del PEI y sus fases.",
+      "Vincular la evaluación de desempeño docente al uso de herramientas tecnológicas que faciliten el aprendizaje por indagación en el aula.",
+      "Promover la creación de comunidades de aprendizaje docente para diseñar, aplicar y evaluar conjuntamente secuencias didácticas basadas en el enfoque institucional."],
+   k:2, j:"C es la más robusta: diseñar, aplicar y evaluar juntos integra organización, orientación y retroalimentación en un ciclo continuo. A vuelve a la simulación documental. B es control externo que no garantiza comprensión ni aplicación genuina."},
+  {n:35, t:"La gestión académica del Coordinador Andrade, frente a la discrepancia entre el PEI y la práctica, debe centrarse en:",
+   o:["Centralizar la aprobación de todas las evaluaciones, garantizando que los instrumentos diseñados por los docentes respondan al enfoque experiencial del PEI.",
+      "Implementar un plan de acompañamiento pedagógico que articule la observación, la retroalimentación reflexiva y la formación situada sobre el enfoque PEI.",
+      "Revisar semanalmente los planes de aula de los docentes, devolviendo aquellos que no evidencien el enfoque pedagógico del Proyecto Educativo Institucional."],
+   k:1, j:'B integra las tres funciones del aspecto: organiza (plan), retroalimenta (reflexión) y orienta (formación situada). A se centra en controlar un producto. C se limita a la revisión documental, que la situación identifica como insuficiente.'}
+ ]
+},
+{
+ id:8, rango:"Preguntas 36 a 40", titulo:'Coordinadora Díaz · I.E. "El Futuro"',
+ subeje:"Gestión académica – Innovación y direccionamiento de procesos académicos",
+ aspecto:"El Coordinador coordina el análisis, la difusión y la apropiación de los resultados de evaluaciones internas y externas, y formula estrategias para mejorar los índices de calidad.",
+ texto:'La Coordinadora Díaz enfrenta un reto de gestión académica tras recibir los resultados de las pruebas externas. La institución muestra estancamiento histórico en los índices de calidad, especialmente en competencias comunicativas y pensamiento lógico. En años anteriores, la difusión de estos resultados consistía en una presentación estadística en la última jornada pedagógica del año, sin análisis profundo ni acciones concretas. Los docentes realizan evaluaciones internas bimestrales, pero esos resultados no se articulan con los externos y la alta reprobación suele justificarse por factores contextuales. Su reto es coordinar un proceso sistemático e innovador: análisis comparativo, identificación de causas pedagógicas reales, apropiación genuina de los datos y formulación de estrategias basadas en evidencia que impacten el PMI.',
+ preguntas:[
+  {n:36, t:"Para coordinar el análisis de resultados y superar la presentación estadística, la acción directiva más pertinente de la Coordinadora Díaz es:",
+   o:["Organizar jornadas de trabajo por áreas para analizar comparativamente los resultados internos y externos, identificando las causas pedagógicas de las dificultades.",
+      "Remitir a los docentes los informes de resultados, solicitando el diseño de planes de refuerzo individuales para los estudiantes con bajo desempeño.",
+      "Presentar al consejo académico un resumen ejecutivo de los resultados externos, pidiendo directrices claras para la actualización del Plan de Mejoramiento Institucional."],
+   k:0, j:"A describe la coordinación del análisis y aborda el reto de articular lo interno con lo externo. B salta el análisis colectivo y va a una estrategia remedial individual. C es difusión a un órgano directivo, no coordinación del análisis con los docentes."},
+  {n:37, t:"Para asegurar la apropiación de los resultados por parte de los docentes, superando la difusión pasiva, la Coordinadora debe:",
+   o:["Publicar los resultados de las pruebas externas en la cartelera institucional, fomentando la transparencia y la rendición de cuentas a la comunidad.",
+      "Diseñar infografías que resuman los resultados de las pruebas externas para socializarlas de manera efectiva en la reunión de padres de familia.",
+      "Facilitar la interpretación de los datos por grados, promoviendo la reflexión docente sobre la coherencia entre las prácticas de aula y los resultados."],
+   k:2, j:"C se centra en la apropiación: facilitar la interpretación conecta con la reflexión docente, paso previo a formular estrategias. A y B son acciones de difusión dirigidas a la comunidad, no aseguran análisis ni apropiación pedagógica."},
+  {n:38, t:"La formulación de estrategias de mejora más efectiva, derivada del análisis de resultados, requiere que la Coordinadora logre:",
+   o:["Sugerir a los docentes la implementación de simulacros de pruebas externas, mejorando el entrenamiento de los estudiantes en el formato de la prueba.",
+      "Orientar la definición de metas de mejora por área, basadas en los resultados del análisis, para integrarlas al Plan de Mejoramiento Institucional.",
+      "Solicitar a la secretaría de educación capacitaciones externas para los docentes en las áreas con mayores deficiencias, actualizando sus conocimientos disciplinares."],
+   k:1, j:"B traduce el análisis en planeación (metas por área integradas al PMI). A es una estrategia reactiva centrada en la prueba, no en la mejora pedagógica. C externaliza la solución sin formular estrategias internas."},
+  {n:39, t:"Frente a la desarticulación entre evaluaciones internas y externas (el problema de fondo), la Coordinadora debe:",
+   o:["Liderar la revisión de las prácticas evaluativas internas, buscando su alineación con las competencias y los estándares evaluados en las pruebas externas.",
+      "Contratar una plataforma externa de evaluación en línea para monitorear el progreso de los estudiantes, reemplazando las pruebas bimestrales tradicionales.",
+      "Pedir a los docentes que aumenten el nivel de dificultad de las evaluaciones internas para que se asemejen a las pruebas externas."],
+   k:0, j:"A aborda la desconexión mencionada: alinear prácticas evaluativas internas con competencias y estándares externos. B es una solución administrativa, no coordinación del análisis pedagógico. C es superficial: más dificultad no equivale a alineación de competencias."},
+  {n:40, t:'Para "direccionar el proceso académico" (innovación), la Coordinadora Díaz debe, en el marco de la situación:',
+   o:["Establecer un sistema de incentivos para los docentes cuyas áreas demuestren mejoras significativas en los resultados de las próximas pruebas externas.",
+      "Impulsar la creación de un ciclo de análisis pedagógico de resultados, usándolos como evidencia para la transformación de las prácticas didácticas.",
+      "Programar reuniones bimestrales de seguimiento para verificar que los docentes apliquen las estrategias de mejora definidas en el Plan de Mejoramiento."],
+   k:1, j:'B es innovación y direccionamiento: un ciclo de análisis convierte los datos en evidencia para transformar la didáctica. C es control, no análisis. A es gestión del talento humano, no direccionamiento académico.'}
+ ]
+},
+{
+ id:9, rango:"Preguntas 41 a 43", titulo:"Coordinador Márquez · indicadores del POA",
+ subeje:"Gestión directiva – Planeación y organización directiva",
+ aspecto:"El Coordinador conoce y da a conocer los indicadores de seguimiento establecidos por el rector para los planes y proyectos.",
+ texto:'El Coordinador Márquez asume su cargo en una institución donde el Rector implementó un riguroso sistema de gestión basado en el POA, con indicadores de seguimiento precisos para cada proyecto estratégico, incluyendo "Convivencia y Paz" y el "Fortalecimiento LEO". Sin embargo, Márquez detecta que el equipo docente desconoce la existencia o pertinencia de estos indicadores: los líderes de proyecto entregan informes de avance meramente descriptivos, centrados en actividades, que omiten la medición del impacto o el progreso hacia las metas. Su reto es doble: conocer a profundidad la lógica y el cálculo de estos indicadores, y darlos a conocer a los equipos como herramienta de organización directiva esencial para el monitoreo y la toma de decisiones.',
+ preguntas:[
+  {n:41, t:'Para que el Coordinador Márquez demuestre que "conoce" los indicadores establecidos por el rector, su acción inicial debe ser:',
+   o:["Recopilar los informes descriptivos de los docentes para verificar el cumplimiento de las actividades programadas en el cronograma institucional.",
+      "Analizar la correspondencia entre los indicadores del rector y las metas de los proyectos, interpretando su pertinencia para la gestión institucional.",
+      "Solicitar a los líderes de proyecto que definan sus propios indicadores, facilitando la autonomía en la gestión de sus actividades."],
+   k:1, j:'B demuestra conocimiento profundo: analizar correspondencia e interpretar pertinencia. A se centra en los informes descriptivos, que son el problema. C contradice la situación: los indicadores ya fueron establecidos por el rector; la tarea es darlos a conocer, no crear otros.'},
+  {n:42, t:'Para "dar a conocer" los indicadores a los docentes y superar la entrega de informes descriptivos, el Coordinador debe:',
+   o:["Orientar jornadas de trabajo con líderes de proyecto, explicando la metodología de medición y la utilidad de los indicadores del rector.",
+      "Enviar por correo electrónico el documento oficial del rector con los indicadores, solicitando a los docentes su lectura y aplicación.",
+      "Presentar un informe estadístico al rector sobre el bajo uso de los indicadores de seguimiento por parte del equipo docente."],
+   k:0, j:"A es la socialización efectiva: explicar la metodología y la utilidad ataca el desconocimiento y la falta de pertinencia percibida. B es pasiva y repite el problema de la comunicación ineficaz. C es reporte y control, no una estrategia para dar a conocer."},
+  {n:43, t:'La finalidad de "dar a conocer" los indicadores del rector, en el marco de la planeación y organización directiva, es:',
+   o:["Verificar que los líderes de proyecto ejecuten el cien por ciento de las actividades listadas en el Plan Operativo Anual.",
+      "Promover el uso de los indicadores del rector como herramienta de seguimiento para la toma de decisiones y el ajuste oportuno.",
+      "Identificar a los docentes que omiten los indicadores del rector en sus informes para reportar el incumplimiento a la rectoría."],
+   k:1, j:"B describe el propósito directivo superior: los indicadores se dan a conocer para el seguimiento y la toma de decisiones. A se enfoca en cumplimiento de actividades (el informe descriptivo), no en el impacto. C reduce la función a un control punitivo."}
+ ]
+},
+{
+ id:10, rango:"Preguntas 44 a 46", titulo:"Coordinadora Berrío · proyecto de Innovación Pedagógica",
+ subeje:"Gestión directiva – Ejecución",
+ aspecto:"El Coordinador verifica indicadores de seguimiento, evalúa los resultados de la gestión propia y del equipo, y establece alternativas de mejoramiento.",
+ texto:'La Coordinadora Berrío está en la fase de ejecución del PMI, liderando el proyecto de "Innovación Pedagógica". El rectorado estableció indicadores claros: aumentar en 15% el uso de metodologías activas y reducir en 10% la tasa de reprobación en matemáticas. A mitad de semestre verifica los indicadores y constata un avance mínimo: el equipo docente ha participado en las formaciones programadas, pero sigue aplicando mayoritariamente métodos tradicionales. Berrío debe evaluar los resultados de la gestión del equipo, reconociendo el esfuerzo en asistencia pero contrastándolo con la baja implementación, y evaluar su propia gestión, cuestionando si la estrategia de formación fue la adecuada. Su reto es establecer alternativas de mejoramiento inmediatas, pasando de la capacitación teórica a un acompañamiento situado en el aula.',
+ preguntas:[
+  {n:44, t:'Al "verificar" el avance mínimo de los indicadores, la acción de gestión directiva más pertinente de la Coordinadora Berrío es:',
+   o:["Implementar nuevas jornadas de formación docente, duplicando la intensidad horaria para asegurar el cumplimiento de las metas del PMI.",
+      "Contrastar los datos de los indicadores de seguimiento (uso de metodologías) con las observaciones de aula para diagnosticar la ejecución.",
+      "Evaluar la percepción de los docentes sobre la pertinencia del proyecto, ajustando las metas según la opinión de los participantes."],
+   k:1, j:"B es la acción de verificación: contrastar datos con observaciones permite un diagnóstico real de la ejecución. C evalúa percepción, no resultados. A es una alternativa de mejoramiento, pero prematura: omite la evaluación de la gestión."},
+  {n:45, t:'Para "evaluar los resultados de la gestión propia y del equipo", reconociendo la brecha entre asistencia y aplicación, la Coordinadora debe:',
+   o:["Determinar el nivel de asistencia de los docentes a las formaciones, reportando al rector el cumplimiento de las actividades programadas.",
+      "Analizar la efectividad de la estrategia de formación (gestión propia) y la transferencia de lo aprendido al aula (gestión equipo).",
+      "Atribuir los bajos resultados de los indicadores a factores contextuales de los estudiantes, sugiriendo una flexibilización de las metas institucionales."],
+   k:1, j:"B es la evaluación integral: efectividad de la estrategia (propia) y transferencia al aula (equipo). A se limita a la asistencia, que la situación indica que fue buena pero insuficiente. C evade la evaluación de la gestión."},
+  {n:46, t:'Habiendo evaluado que la formación teórica fue insuficiente, la Coordinadora Berrío debe "establecer alternativas de mejoramiento" al:',
+   o:["Insistir en la capacitación teórica sobre metodologías activas, pidiendo a los docentes un mayor compromiso con los objetivos del PMI.",
+      "Informar al consejo directivo sobre el bajo avance en los indicadores, solicitando la reformulación de las metas del proyecto institucional.",
+      "Reorientar la ejecución del proyecto, implementando un acompañamiento pedagógico situado en el aula para modelar las metodologías activas."],
+   k:2, j:"C responde a la evaluación (la teoría falló) con acompañamiento situado. A insiste en la estrategia fallida. B es una acción administrativa que evade la responsabilidad de establecer alternativas de mejora."}
+ ]
+}
+];
+
+/* ====================== ESTADO ====================== */
+const LETRAS=["A","B","C"];
+let PLANO=[], idx=0, modo="guiada", respuestas=[], sitAbierta=true;
+
+function aplanar(lista){
+  const out=[];
+  lista.forEach(s=>s.preguntas.forEach(q=>out.push({...q, sit:s})));
+  return out;
+}
+
+function iniciar(m){
+  modo=m;
+  PLANO=aplanar(SITUACIONES);
+  respuestas=new Array(PLANO.length).fill(null);
+  idx=0;
+  document.getElementById('start').classList.add('hidden');
+  document.getElementById('results').classList.add('hidden');
+  document.getElementById('quiz').classList.remove('hidden');
+  pintar();
+}
+
+function repetirFalladas(){
+  const malas = PLANO.filter((q,i)=>respuestas[i]!==q.k);
+  if(!malas.length){ alert("No hay preguntas falladas. Buen trabajo."); return; }
+  PLANO = malas;
+  respuestas = new Array(PLANO.length).fill(null);
+  idx=0;
+  document.getElementById('results').classList.add('hidden');
+  document.getElementById('quiz').classList.remove('hidden');
+  window.scrollTo({top:0});
+  pintar();
+}
+
+function toggleSit(){
+  sitAbierta=!sitAbierta;
+  document.getElementById('sitCard').classList.toggle('closed', !sitAbierta);
+}
+
+function pintar(){
+  const q=PLANO[idx];
+  const r=respuestas[idx];
+
+  // Situación
+  document.getElementById('sitTitle').textContent = q.sit.titulo + " · " + q.sit.rango;
+  document.getElementById('sitBody').innerHTML =
+    '<p>'+q.sit.texto+'</p><p style="margin:0"><span class="tag warm">'+q.sit.subeje+'</span></p>';
+  document.getElementById('sitCard').classList.toggle('closed', !sitAbierta);
+
+  // Pregunta
+  const card=document.getElementById('qCard');
+  card.classList.remove('fade'); void card.offsetWidth; card.classList.add('fade');
+  document.getElementById('qnum').textContent = "Pregunta "+q.n;
+  document.getElementById('qtext').textContent = q.t;
+
+  const cont=document.getElementById('opts');
+  cont.innerHTML="";
+  q.o.forEach((txt,i)=>{
+    const b=document.createElement('button');
+    b.className="opt";
+    b.type="button";
+    b.innerHTML='<span class="letter">'+LETRAS[i]+'</span><span>'+txt+'</span>';
+    if(r!==null){
+      b.disabled=true;
+      if(modo==="guiada"){
+        if(i===q.k) b.classList.add('right');
+        else if(i===r) b.classList.add('wrong');
+      }else if(i===r){ b.classList.add('sel'); }
+    }
+    b.onclick=()=>responder(i);
+    cont.appendChild(b);
+  });
+
+  // Feedback
+  const fb=document.getElementById('fb');
+  fb.innerHTML="";
+  if(r!==null && modo==="guiada"){
+    const bien = r===q.k;
+    fb.innerHTML='<div class="fb '+(bien?'ok':'no')+'">'+
+      '<span class="verdict">'+(bien?'Correcto · clave '+LETRAS[q.k]:'Incorrecto · la clave es '+LETRAS[q.k])+'</span>'+
+      q.j+'</div>';
+  }
+
+  // Navegación
+  document.getElementById('btnPrev').disabled = idx===0;
+  const next=document.getElementById('btnNext');
+  next.textContent = (idx===PLANO.length-1) ? "Ver resultados" : "Siguiente";
+  next.disabled = (modo==="guiada" && r===null);
+
+  // Progreso
+  const hechas = respuestas.filter(x=>x!==null).length;
+  document.getElementById('counter').textContent = (idx+1)+" / "+PLANO.length+" · respondidas: "+hechas;
+  document.getElementById('pbar').style.width = (hechas/PLANO.length*100)+"%";
+  window.scrollTo({top:0, behavior:'smooth'});
+}
+
+function responder(i){
+  if(respuestas[idx]!==null) return;
+  respuestas[idx]=i;
+  if(modo==="simulacro"){
+    if(idx<PLANO.length-1){ idx++; pintar(); }
+    else pintar();
+  }else{
+    pintar();
+  }
+}
+
+function ir(d){
+  const nuevo=idx+d;
+  if(nuevo<0) return;
+  if(nuevo>=PLANO.length){ terminar(); return; }
+  idx=nuevo; pintar();
+}
+
+function terminar(){
+  const sinResponder = respuestas.filter(x=>x===null).length;
+  if(sinResponder>0 && !confirm("Quedan "+sinResponder+" preguntas sin responder. ¿Ver resultados de todas formas?")) return;
+
+  let ok=0; const porSub={};
+  PLANO.forEach((q,i)=>{
+    const bien = respuestas[i]===q.k;
+    if(bien) ok++;
+    const s=q.sit.subeje;
+    if(!porSub[s]) porSub[s]={ok:0,tot:0};
+    porSub[s].tot++; if(bien) porSub[s].ok++;
+  });
+  const pct=Math.round(ok/PLANO.length*100);
+
+  document.getElementById('rScore').textContent=ok;
+  document.querySelector('#results .of').textContent="respuestas correctas de "+PLANO.length;
+  document.getElementById('rPct').textContent=pct+"%";
+  document.getElementById('rMsg').textContent =
+    pct>=85 ? "Dominio sólido del criterio técnico. Mantén el ritmo con las que fallaste."
+    : pct>=70 ? "Buen nivel. Revisa las falladas: casi siempre están en el mismo sub-eje."
+    : "Hay margen. Fíjate si estás eligiendo la opción que organiza o informa en vez de la que genera reflexión pedagógica.";
+
+  const tb=document.getElementById('rTable'); tb.innerHTML="";
+  Object.keys(porSub).forEach(s=>{
+    const d=porSub[s], p=Math.round(d.ok/d.tot*100);
+    const tr=document.createElement('tr');
+    tr.innerHTML='<td>'+s+'<div class="bar"><i style="width:'+p+'%"></i></div></td>'+
+                 '<td class="num">'+d.ok+'/'+d.tot+'</td>';
+    tb.appendChild(tr);
+  });
+
+  const w=document.getElementById('rWrong'); w.innerHTML="";
+  let hubo=false;
+  PLANO.forEach((q,i)=>{
+    if(respuestas[i]===q.k) return;
+    hubo=true;
+    const marc = respuestas[i]===null ? "sin responder" : LETRAS[respuestas[i]]+" · "+q.o[respuestas[i]];
+    const div=document.createElement('div');
+    div.className="rev";
+    div.innerHTML='<div class="q">Pregunta '+q.n+' · '+q.t+'</div>'+
+      '<div class="line">Marcaste: <b class="bad">'+marc+'</b></div>'+
+      '<div class="line">Clave: <b class="good">'+LETRAS[q.k]+' · '+q.o[q.k]+'</b></div>'+
+      '<div class="why">'+q.j+'</div>';
+    w.appendChild(div);
+  });
+  if(!hubo) w.innerHTML='<p class="lead">Ninguna fallada. Las 46 con clave correcta.</p>';
+
+  document.getElementById('quiz').classList.add('hidden');
+  document.getElementById('results').classList.remove('hidden');
+  window.scrollTo({top:0, behavior:'smooth'});
+}
+
+document.addEventListener('keydown', e=>{
+  if(document.getElementById('quiz').classList.contains('hidden')) return;
+  const k=e.key.toUpperCase();
+  if(["A","B","C"].includes(k)) responder(LETRAS.indexOf(k));
+  if(e.key==="ArrowRight" && !document.getElementById('btnNext').disabled) ir(1);
+  if(e.key==="ArrowLeft" && idx>0) ir(-1);
+});
+</script>
+</body>
+</html>
