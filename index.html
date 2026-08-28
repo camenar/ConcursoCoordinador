@@ -7,79 +7,311 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Concurso">
-<meta name="description" content="Materiales de preparación para el concurso de directivo docente — coordinación.">
+<meta name="description" content="Portal de preparación para el concurso de directivo docente — coordinación. Materiales, guía de errores y bitácora de simulacros.">
 <title>Preparación Concurso · Coordinador</title>
 <style>
+/* ═══════════ BASE Y PESTAÑAS ═══════════ */
 :root{
   --navy:#1F2A6E; --navy-d:#151d4f; --navy-l:#2f3d8f;
-  --orange:#E67E22; --bg:#f4f6fb; --card:#fff;
-  --gray:#5b6478; --line:#dde2ee; --ok:#1e8e5a;
+  --orange:#E67E22; --orange-l:#f0a55c;
+  --bg:#f4f6fb; --card:#fff;
+  --ok:#1e8e5a; --ok-bg:#e9f6f0;
+  --bad:#c0392b; --bad-bg:#fdeceb;
+  --warn:#a8590a; --warn-bg:#fdf1e3;
+  --gray:#5b6478; --line:#dde2ee;
 }
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
 body{font-family:Arial,Helvetica,sans-serif;background:var(--bg);color:#1c2233;line-height:1.55;
   -webkit-text-size-adjust:100%}
-.wrap{max-width:840px;margin:0 auto;padding:0 16px}
-header{background:linear-gradient(135deg,var(--navy),var(--navy-l));color:#fff;
-  padding:calc(30px + env(safe-area-inset-top)) 0 26px}
-header .eyebrow{font-size:.68rem;letter-spacing:2.2px;text-transform:uppercase;opacity:.8;margin-bottom:9px}
-header h1{font-size:1.5rem;line-height:1.25}
-header p{font-size:.92rem;opacity:.9;margin-top:9px;max-width:560px}
+.wrap{max-width:900px;margin:0 auto;padding:0 16px}
 
-/* filtros */
-.filtros{display:flex;gap:8px;overflow-x:auto;padding:18px 0 4px;-webkit-overflow-scrolling:touch;
-  scrollbar-width:none}
-.filtros::-webkit-scrollbar{display:none}
-.chip{flex:0 0 auto;border:2px solid var(--line);background:#fff;color:var(--gray);border-radius:20px;
-  padding:8px 16px;font-size:.85rem;font-family:inherit;font-weight:bold;cursor:pointer;white-space:nowrap}
-.chip.on{background:var(--navy);border-color:var(--navy);color:#fff}
+/* ── barra superior y pestañas ── */
+.top{background:linear-gradient(135deg,var(--navy),var(--navy-l));color:#fff;
+  padding:calc(26px + env(safe-area-inset-top)) 0 0;position:sticky;top:0;z-index:30;
+  box-shadow:0 2px 12px rgba(31,42,110,.22)}
+.top .eyebrow{font-size:.66rem;letter-spacing:2.2px;text-transform:uppercase;opacity:.78;margin-bottom:6px}
+.top h1{font-size:1.32rem;line-height:1.25;margin-bottom:16px}
+.tabs{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none}
+.tabs::-webkit-scrollbar{display:none}
+.tab{flex:0 0 auto;border:0;background:transparent;color:rgba(255,255,255,.72);
+  font-family:inherit;font-size:.92rem;font-weight:bold;cursor:pointer;
+  padding:11px 15px;border-bottom:3px solid transparent;white-space:nowrap;
+  transition:color .15s ease,border-color .15s ease}
+.tab:hover{color:#fff}
+.tab.on{color:#fff;border-bottom-color:var(--orange)}
+.tab:focus-visible{outline:2px solid var(--orange);outline-offset:-4px}
 
-/* tarjetas */
-.lista{padding:6px 0 10px}
-.item{display:block;text-decoration:none;color:inherit;background:var(--card);border-radius:13px;
-  padding:18px;margin-bottom:13px;box-shadow:0 2px 10px rgba(31,42,110,.07);
-  border-left:5px solid var(--orange);transition:transform .12s,box-shadow .12s}
-.item:active{transform:scale(.985)}
-@media(hover:hover){.item:hover{box-shadow:0 6px 18px rgba(31,42,110,.14)}}
-.item .top{display:flex;align-items:flex-start;gap:12px;margin-bottom:7px}
-.item .ico{flex:0 0 42px;height:42px;border-radius:11px;background:#eef1f9;display:flex;
-  align-items:center;justify-content:center;font-size:1.25rem}
-.item h2{font-size:1.05rem;color:var(--navy);line-height:1.3;flex:1}
-.item .resumen{font-size:.9rem;color:#39415a;margin-bottom:11px}
-.item .meta{display:flex;flex-wrap:wrap;gap:7px;align-items:center}
-.tag{font-size:.7rem;font-weight:bold;letter-spacing:.4px;text-transform:uppercase;
-  padding:3px 9px;border-radius:11px;background:#eef1f9;color:var(--navy)}
-.tag.o{background:#fdf0e2;color:#a8590a}
-.tag.v{background:#e9f6f0;color:var(--ok)}
-.tag.n{background:var(--orange);color:#fff}
-.ultimo{font-size:.72rem;color:var(--gray);margin-left:auto;font-style:italic}
+/* ── panel activo ── */
+.panel{display:none}
+.panel.on{display:block;animation:aparecer .28s ease}
+@keyframes aparecer{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
 
-.vacio{background:#fff;border:2px dashed var(--line);border-radius:13px;padding:26px 18px;
-  text-align:center;color:var(--gray);font-size:.9rem}
-
-/* bloque de ayuda */
-.ayuda{background:#fff;border-radius:13px;padding:20px;margin:22px 0 8px;
-  box-shadow:0 2px 10px rgba(31,42,110,.07)}
-.ayuda h3{font-size:.95rem;color:var(--navy);margin-bottom:10px}
-.ayuda p{font-size:.87rem;color:#39415a;margin-bottom:9px}
-.ayuda code{background:#eef1f9;padding:2px 6px;border-radius:4px;font-size:.83rem;
-  font-family:ui-monospace,Menlo,Consolas,monospace;color:var(--navy);word-break:break-word}
-.ayuda pre{background:#1c2233;color:#e8ecf7;border-radius:9px;padding:14px;overflow-x:auto;
-  font-size:.78rem;line-height:1.5;margin:10px 0;font-family:ui-monospace,Menlo,Consolas,monospace}
-details summary{cursor:pointer;font-weight:bold;color:var(--navy);font-size:.92rem;padding:4px 0}
-details[open] summary{margin-bottom:9px}
+/* ── banner interno de cada pestaña ── */
+.hero{background:linear-gradient(135deg,var(--navy),var(--navy-l));color:#fff;
+  border-radius:14px;padding:26px 24px;margin:20px 0 4px}
+.hero .eyebrow{font-size:.66rem;letter-spacing:2.2px;text-transform:uppercase;opacity:.8;margin-bottom:9px}
+.hero h1{font-size:1.42rem;line-height:1.28;margin-bottom:12px}
+.hero h1 em{color:#ffcf9e;font-style:normal}
+.hero p{font-size:.94rem;opacity:.92;max-width:640px}
+.hero .stat{display:inline-block;background:rgba(255,255,255,.13);border:1px solid rgba(255,255,255,.28);
+  border-radius:8px;padding:11px 16px;margin-top:18px;font-size:.86rem}
+.hero .stat b{font-size:1.5rem;display:block;color:#ffcf9e;line-height:1.1}
 
 footer{text-align:center;color:var(--gray);font-size:.78rem;
+  padding:38px 16px calc(30px + env(safe-area-inset-bottom));line-height:1.7}
+@media(max-width:640px){.top h1{font-size:1.1rem}.hero{padding:20px 18px}.hero h1{font-size:1.2rem}}
+@media(prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation-duration:.001ms!important;transition-duration:.001ms!important}
+  .panel.on{animation:none}
+}
+
+/* ═══════════ PESTAÑA 1 · MATERIALES ═══════════ */
+#pMateriales .wrap{max-width:840px;margin:0 auto;padding:0 16px}
+#pMateriales .hero{background:linear-gradient(135deg,var(--navy),var(--navy-l));color:#fff;
+  padding:calc(30px + env(safe-area-inset-top)) 0 26px}
+#pMateriales .hero .eyebrow{font-size:.68rem;letter-spacing:2.2px;text-transform:uppercase;opacity:.8;margin-bottom:9px}
+#pMateriales .hero h1{font-size:1.5rem;line-height:1.25}
+#pMateriales .hero p{font-size:.92rem;opacity:.9;margin-top:9px;max-width:560px}
+#pMateriales /* filtros */
+.filtros{display:flex;gap:8px;overflow-x:auto;padding:18px 0 4px;-webkit-overflow-scrolling:touch;
+  scrollbar-width:none}
+#pMateriales .filtros::-webkit-scrollbar{display:none}
+#pMateriales .chip{flex:0 0 auto;border:2px solid var(--line);background:#fff;color:var(--gray);border-radius:20px;
+  padding:8px 16px;font-size:.85rem;font-family:inherit;font-weight:bold;cursor:pointer;white-space:nowrap}
+#pMateriales .chip.on{background:var(--navy);border-color:var(--navy);color:#fff}
+#pMateriales /* tarjetas */
+.lista{padding:6px 0 10px}
+#pMateriales .item{display:block;text-decoration:none;color:inherit;background:var(--card);border-radius:13px;
+  padding:18px;margin-bottom:13px;box-shadow:0 2px 10px rgba(31,42,110,.07);
+  border-left:5px solid var(--orange);transition:transform .12s,box-shadow .12s}
+#pMateriales .item:active{transform:scale(.985)}
+@media(hover:hover){
+#pMateriales .item:hover{box-shadow:0 6px 18px rgba(31,42,110,.14)}
+}
+#pMateriales .item .top{display:flex;align-items:flex-start;gap:12px;margin-bottom:7px}
+#pMateriales .item .ico{flex:0 0 42px;height:42px;border-radius:11px;background:#eef1f9;display:flex;
+  align-items:center;justify-content:center;font-size:1.25rem}
+#pMateriales .item h2{font-size:1.05rem;color:var(--navy);line-height:1.3;flex:1}
+#pMateriales .item .resumen{font-size:.9rem;color:#39415a;margin-bottom:11px}
+#pMateriales .item .meta{display:flex;flex-wrap:wrap;gap:7px;align-items:center}
+#pMateriales .tag{font-size:.7rem;font-weight:bold;letter-spacing:.4px;text-transform:uppercase;
+  padding:3px 9px;border-radius:11px;background:#eef1f9;color:var(--navy)}
+#pMateriales .tag.o{background:#fdf0e2;color:#a8590a}
+#pMateriales .tag.v{background:#e9f6f0;color:var(--ok)}
+#pMateriales .tag.n{background:var(--orange);color:#fff}
+#pMateriales .ultimo{font-size:.72rem;color:var(--gray);margin-left:auto;font-style:italic}
+#pMateriales .vacio{background:#fff;border:2px dashed var(--line);border-radius:13px;padding:26px 18px;
+  text-align:center;color:var(--gray);font-size:.9rem}
+#pMateriales /* bloque de ayuda */
+.ayuda{background:#fff;border-radius:13px;padding:20px;margin:22px 0 8px;
+  box-shadow:0 2px 10px rgba(31,42,110,.07)}
+#pMateriales .ayuda h3{font-size:.95rem;color:var(--navy);margin-bottom:10px}
+#pMateriales .ayuda p{font-size:.87rem;color:#39415a;margin-bottom:9px}
+#pMateriales .ayuda code{background:#eef1f9;padding:2px 6px;border-radius:4px;font-size:.83rem;
+  font-family:ui-monospace,Menlo,Consolas,monospace;color:var(--navy);word-break:break-word}
+#pMateriales .ayuda pre{background:#1c2233;color:#e8ecf7;border-radius:9px;padding:14px;overflow-x:auto;
+  font-size:.78rem;line-height:1.5;margin:10px 0;font-family:ui-monospace,Menlo,Consolas,monospace}
+#pMateriales details summary{cursor:pointer;font-weight:bold;color:var(--navy);font-size:.92rem;padding:4px 0}
+#pMateriales details[open] summary{margin-bottom:9px}
+#pMateriales footer{text-align:center;color:var(--gray);font-size:.78rem;
   padding:26px 16px calc(26px + env(safe-area-inset-bottom));line-height:1.7}
-@media(max-width:400px){header h1{font-size:1.28rem}.item{padding:15px}}
+@media(max-width:400px){
+#pMateriales .hero h1{font-size:1.28rem}
+#pMateriales .item{padding:15px}
+}
+
+/* ═══════════ PESTAÑA 2 · GUÍA ═══════════ */
+#pGuia .wrap{max-width:900px;margin:0 auto;padding:0 18px}
+#pGuia .hero{background:linear-gradient(135deg,var(--navy),var(--navy-l));color:#fff;padding:52px 0 44px}
+#pGuia .hero .eyebrow{font-size:.72rem;letter-spacing:2.5px;text-transform:uppercase;opacity:.8;margin-bottom:14px}
+#pGuia .hero h1{font-size:2rem;line-height:1.25;margin-bottom:16px}
+#pGuia .hero h1 em{color:#ffcf9e;font-style:normal}
+#pGuia .hero p{font-size:1.02rem;opacity:.92;max-width:660px}
+#pGuia .stat{display:inline-block;background:rgba(255,255,255,.13);border:1px solid rgba(255,255,255,.28);
+  border-radius:8px;padding:12px 18px;margin-top:24px;font-size:.9rem}
+#pGuia .stat b{font-size:1.7rem;display:block;color:#ffcf9e;line-height:1.1}
+#pGuia section{padding:44px 0 8px}
+#pGuia h2{color:var(--navy);font-size:1.32rem;margin-bottom:6px;line-height:1.3}
+#pGuia .sub{color:var(--gray);font-size:.92rem;margin-bottom:20px}
+#pGuia h3{color:var(--navy);font-size:1rem;margin:24px 0 8px}
+#pGuia p{margin-bottom:13px}
+#pGuia .card{background:var(--card);border-radius:12px;padding:24px;box-shadow:0 2px 10px rgba(31,42,110,.07);margin-bottom:18px}
+#pGuia .rule{background:var(--navy);color:#fff;border-radius:12px;padding:26px 28px;margin:22px 0}
+#pGuia .rule .q{font-size:1.12rem;font-weight:bold;color:#ffcf9e;margin-bottom:10px}
+#pGuia .rule p{opacity:.94;margin-bottom:0}
+#pGuia /* par de contraste */
+.par{border:1px solid var(--line);border-radius:11px;overflow:hidden;margin-bottom:16px;background:#fff}
+#pGuia .par .n{background:#eef1f9;padding:9px 16px;font-size:.76rem;font-weight:bold;color:var(--navy);
+  letter-spacing:1px;text-transform:uppercase}
+#pGuia .par .row{padding:14px 16px;border-top:1px solid var(--line);font-size:.92rem;display:flex;gap:13px;align-items:flex-start}
+#pGuia .par .tag{flex:0 0 auto;font-size:.68rem;font-weight:bold;letter-spacing:.6px;text-transform:uppercase;
+  padding:3px 9px;border-radius:11px;margin-top:2px;white-space:nowrap}
+#pGuia .par .row.x{background:var(--bad-bg)}
+#pGuia .par .row.x .tag{background:var(--bad);color:#fff}
+#pGuia .par .row.v{background:var(--ok-bg)}
+#pGuia .par .row.v .tag{background:var(--ok);color:#fff}
+#pGuia mark{background:#ffe2bd;padding:1px 3px;border-radius:3px;font-weight:bold;color:#8a4b06}
+#pGuia mark.g{background:#c9edda;color:#0f5c3a}
+#pGuia /* dos columnas de vocabulario */
+.vocab{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+#pGuia .vocab>div{border-radius:11px;padding:18px}
+#pGuia .vocab .d{background:var(--bad-bg);border:1px solid #f3c7c2}
+#pGuia .vocab .k{background:var(--ok-bg);border:1px solid #bfe4d3}
+#pGuia .vocab h4{font-size:.78rem;letter-spacing:1px;text-transform:uppercase;margin-bottom:11px}
+#pGuia .vocab .d h4{color:var(--bad)}
+#pGuia .vocab .k h4{color:var(--ok)}
+#pGuia .vocab ul{list-style:none;font-size:.9rem}
+#pGuia .vocab li{padding:4px 0 4px 16px;position:relative}
+#pGuia .vocab li:before{position:absolute;left:0;font-weight:bold}
+#pGuia .vocab .d li:before{content:"×";color:var(--bad)}
+#pGuia .vocab .k li:before{content:"✓";color:var(--ok)}
+#pGuia /* escalera */
+.step{display:flex;gap:15px;margin-bottom:14px;align-items:flex-start}
+#pGuia .step .lvl{flex:0 0 40px;height:40px;border-radius:50%;background:var(--orange);color:#fff;
+  display:flex;align-items:center;justify-content:center;font-weight:bold;font-size:1.05rem}
+#pGuia .step .lvl.a{background:#f0a55c}
+#pGuia .step .lvl.b{background:var(--orange)}
+#pGuia .step .lvl.c{background:var(--navy)}
+#pGuia .step b{color:var(--navy);display:block;margin-bottom:2px}
+#pGuia .step small{color:var(--gray);font-size:.88rem;display:block}
+#pGuia table{width:100%;border-collapse:collapse;font-size:.9rem;margin:10px 0 4px}
+#pGuia th, #pGuia td{padding:10px 9px;text-align:left;border-bottom:1px solid var(--line);vertical-align:top}
+#pGuia th{background:var(--navy);color:#fff;font-size:.75rem;text-transform:uppercase;letter-spacing:.7px}
+#pGuia /* drill */
+.drill{border:2px solid var(--line);border-radius:11px;padding:18px;margin-bottom:14px;background:#fff}
+#pGuia .drill .pregunta{font-weight:bold;color:var(--navy);margin-bottom:12px;font-size:.97rem}
+#pGuia .opt{border:2px solid var(--line);border-radius:8px;padding:11px 13px;margin-bottom:9px;cursor:pointer;
+  font-size:.91rem;transition:.12s;background:#fff}
+#pGuia .opt:hover{border-color:var(--orange)}
+#pGuia .opt.ok{border-color:var(--ok);background:var(--ok-bg)}
+#pGuia .opt.no{border-color:var(--bad);background:var(--bad-bg)}
+#pGuia .expl{font-size:.89rem;background:#f7f9ff;border-left:4px solid var(--navy);padding:11px 14px;
+  border-radius:0 7px 7px 0;margin-top:9px;display:none}
+#pGuia .expl.on{display:block}
+#pGuia .note{background:#fff8f1;border:1px solid #f3d9bd;border-radius:9px;padding:14px 16px;font-size:.9rem;color:#7a4b12}
+#pGuia footer{text-align:center;color:var(--gray);font-size:.82rem;padding:40px 18px 26px;line-height:1.7}
+@media(max-width:640px){
+#pGuia .vocab{grid-template-columns:1fr}
+#pGuia .hero h1{font-size:1.5rem}
+#pGuia .card{padding:17px}
+}
+
+/* ═══════════ PESTAÑA 3 · BITÁCORA ═══════════ */
+#pBitacora .wrap{max-width:900px;margin:0 auto;padding:0 16px}
+#pBitacora .hero{background:linear-gradient(135deg,var(--navy),var(--navy-l));color:#fff;
+  padding:calc(30px + env(safe-area-inset-top)) 0 26px}
+#pBitacora .hero .eyebrow{font-size:.68rem;letter-spacing:2.2px;text-transform:uppercase;opacity:.8;margin-bottom:9px}
+#pBitacora .hero h1{font-size:1.5rem;line-height:1.25}
+#pBitacora .hero p{font-size:.92rem;opacity:.9;margin-top:9px;max-width:600px}
+#pBitacora section{padding:26px 0 0}
+#pBitacora h2{color:var(--navy);font-size:1.18rem;margin-bottom:4px}
+#pBitacora .sub{color:var(--gray);font-size:.88rem;margin-bottom:16px}
+#pBitacora h3{color:var(--navy);font-size:.95rem;margin:20px 0 8px}
+#pBitacora .card{background:var(--card);border-radius:13px;padding:20px;box-shadow:0 2px 10px rgba(31,42,110,.07);margin-bottom:16px}
+#pBitacora /* KPIs */
+.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:16px}
+#pBitacora .kpi{background:var(--card);border-radius:13px;padding:16px 14px;box-shadow:0 2px 10px rgba(31,42,110,.07);
+  border-top:4px solid var(--orange)}
+#pBitacora .kpi b{display:block;font-size:1.75rem;color:var(--navy);line-height:1.1}
+#pBitacora .kpi span{display:block;font-size:.72rem;color:var(--gray);text-transform:uppercase;letter-spacing:.6px;margin-top:5px}
+#pBitacora .kpi.up b{color:var(--ok)}
+#pBitacora .kpi.down b{color:var(--bad)}
+#pBitacora /* gráfico */
+.chartbox{overflow-x:auto;-webkit-overflow-scrolling:touch}
+#pBitacora svg{display:block;max-width:100%;height:auto}
+#pBitacora .gl{stroke:var(--line);stroke-width:1}
+#pBitacora .gt{font-size:11px;fill:var(--gray);font-family:Arial,Helvetica,sans-serif}
+#pBitacora .gt.b{fill:var(--navy);font-weight:bold}
+#pBitacora .line{fill:none;stroke:var(--orange);stroke-width:3;stroke-linecap:round;stroke-linejoin:round;
+  stroke-dasharray:var(--len);stroke-dashoffset:var(--len);animation:draw 1.4s ease forwards}
+#pBitacora .area{fill:var(--orange);opacity:0;animation:fadein .8s ease .7s forwards}
+#pBitacora .dot{fill:#fff;stroke:var(--navy);stroke-width:3;opacity:0;animation:fadein .35s ease forwards}
+@keyframes draw{to{stroke-dashoffset:0}}
+@keyframes fadein{to{opacity:1}}
+#pBitacora .area{--o:.1}
+#pBitacora /* tabla */
+table{width:100%;border-collapse:collapse;font-size:.88rem}
+#pBitacora th, #pBitacora td{padding:10px 8px;text-align:left;border-bottom:1px solid var(--line);vertical-align:top}
+#pBitacora th{background:#eef1f9;color:var(--navy);font-size:.7rem;text-transform:uppercase;letter-spacing:.6px}
+#pBitacora td.n{text-align:right;white-space:nowrap;font-weight:bold}
+#pBitacora .pill{display:inline-block;border-radius:20px;padding:2px 10px;font-size:.75rem;font-weight:bold}
+#pBitacora .pill.ok{background:var(--ok-bg);color:var(--ok)}
+#pBitacora .pill.warn{background:var(--warn-bg);color:var(--warn)}
+#pBitacora .pill.bad{background:var(--bad-bg);color:var(--bad)}
+#pBitacora .mini{font-size:.8rem;color:var(--gray);display:block;margin-top:3px}
+#pBitacora /* barras por sub-eje */
+.eje{margin-bottom:13px}
+#pBitacora .eje .top{display:flex;gap:10px;align-items:baseline;font-size:.88rem}
+#pBitacora .eje .top b{margin-left:auto;color:var(--navy);white-space:nowrap}
+#pBitacora .bar{height:9px;background:#e6e9f0;border-radius:99px;overflow:hidden;margin-top:5px}
+#pBitacora .bar>i{display:block;height:100%;border-radius:99px;background:var(--orange);
+  width:0;transition:width .9s ease}
+#pBitacora .bar>i.good{background:var(--ok)}
+#pBitacora .bar>i.risk{background:var(--bad)}
+#pBitacora /* formulario */
+.form{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+#pBitacora .form label{font-size:.78rem;color:var(--gray);text-transform:uppercase;letter-spacing:.5px;
+  display:block;margin-bottom:4px;font-weight:bold}
+#pBitacora .form .full{grid-column:1/-1}
+#pBitacora input, #pBitacora textarea, #pBitacora select{width:100%;font-family:inherit;font-size:.95rem;padding:10px 12px;
+  border:2px solid var(--line);border-radius:9px;background:#fff;color:inherit}
+#pBitacora input:focus, #pBitacora textarea:focus, #pBitacora select:focus{outline:none;border-color:var(--orange)}
+#pBitacora textarea{resize:vertical;min-height:70px}
+#pBitacora .btn{border:0;cursor:pointer;font-family:inherit;font-size:.95rem;font-weight:bold;
+  padding:12px 20px;border-radius:10px;background:var(--navy);color:#fff;
+  transition:transform .15s ease,opacity .15s ease}
+#pBitacora .btn:hover{transform:translateY(-2px)}
+#pBitacora .btn:active{transform:translateY(0)}
+#pBitacora .btn.alt{background:var(--orange)}
+#pBitacora .btn.ghost{background:#fff;color:var(--navy);border:2px solid var(--navy);padding:10px 18px}
+#pBitacora .btn.sm{font-size:.84rem;padding:9px 15px}
+#pBitacora .btn:focus-visible{outline:3px solid var(--orange);outline-offset:2px}
+#pBitacora .btnrow{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px}
+#pBitacora pre{background:#1c2233;color:#e8ecf7;border-radius:9px;padding:14px;overflow-x:auto;
+  font-size:.76rem;line-height:1.5;margin-top:12px;font-family:ui-monospace,Menlo,Consolas,monospace;
+  white-space:pre-wrap;word-break:break-word}
+#pBitacora .note{background:#fff8f1;border:1px solid #f3d9bd;border-radius:9px;padding:13px 15px;
+  font-size:.86rem;color:#7a4b12;margin-top:14px}
+#pBitacora .note code{background:#f6e7d4;padding:1px 5px;border-radius:4px;font-size:.82rem}
+#pBitacora details summary{cursor:pointer;font-weight:bold;color:var(--navy);font-size:.92rem;padding:4px 0}
+#pBitacora details[open] summary{margin-bottom:10px}
+#pBitacora .hide{display:none!important}
+#pBitacora footer{text-align:center;color:var(--gray);font-size:.78rem;
+  padding:34px 16px calc(30px + env(safe-area-inset-bottom));line-height:1.7}
+@media(max-width:640px){
+#pBitacora .kpis{grid-template-columns:1fr 1fr}
+#pBitacora .form{grid-template-columns:1fr}
+#pBitacora .hero h1{font-size:1.28rem}
+#pBitacora .card{padding:16px}
+}
+@media(prefers-reduced-motion:reduce){
+#pBitacora *::before, #pBitacora *::after{animation-duration:.001ms!important;transition-duration:.001ms!important}
+#pBitacora .line{stroke-dashoffset:0!important}
+#pBitacora .area, #pBitacora .dot{opacity:1!important}
+#pBitacora .btn:hover{transform:none}
+}
 </style>
 </head>
 <body>
 
-<header><div class="wrap">
+<div class="top"><div class="wrap">
+  <div class="eyebrow">Concurso de ingreso · Directivo docente</div>
+  <h1>Preparación para Coordinación</h1>
+  <nav class="tabs" role="tablist">
+    <button class="tab on" role="tab" data-p="materiales">Materiales</button>
+    <button class="tab" role="tab" data-p="guia">El reflejo del docente</button>
+    <button class="tab" role="tab" data-p="bitacora">Bitácora</button>
+  </nav>
+</div></div>
+
+<div class="wrap">
+
+<div class="panel on" id="pMateriales">
+<div class="hero">
   <div class="eyebrow">Concurso de ingreso · Directivo docente</div>
   <h1>Preparación para Coordinación</h1>
   <p>Simulacros, bancos de preguntas y guías de estudio. Todo funciona sin conexión una vez cargado.</p>
-</div></header>
+</div>
 
 <div class="wrap">
   <div class="filtros" id="filtros"></div>
@@ -98,6 +330,7 @@ footer{text-align:center;color:var(--gray);font-size:.78rem;
   meta: ["40 preguntas", "60 min"],
   nuevo: true
 }</pre>
+      <p><b>Ojo:</b> la guía y la bitácora ya no son archivos aparte, viven como pestañas dentro de este mismo <code>index.html</code>. Aquí solo se listan los simulacros, que siguen siendo archivos independientes.</p>
       <p><b>categoria</b> crea el filtro automáticamente: si escribes una categoría que no existe, aparece un botón nuevo arriba.</p>
       <p><b>nuevo: true</b> le pone la etiqueta naranja. Quítalo cuando deje de ser reciente.</p>
       <p>Sube el archivo <code>.html</code> del material al mismo nivel que <code>index.html</code> en el repositorio, confirma los cambios y espera un minuto. Recuerda el refresco forzado con <code>Cmd+Shift+R</code> si ves la versión vieja.</p>
@@ -113,6 +346,398 @@ footer{text-align:center;color:var(--gray);font-size:.78rem;
     </details>
   </div>
 </div>
+</div>
+
+<div class="panel" id="pGuia">
+<div class="hero">
+  <div class="eyebrow">Concurso directivo docente · Coordinación</div>
+  <h1>No te falta conocimiento.<br>Te sobra <em>reflejo de docente</em>.</h1>
+  <p>Un solo hábito de razonamiento explica los 18 errores de tu sección más débil, y reaparece en la mayoría de los demás. Identificarlo vale más que estudiar cien preguntas nuevas.</p>
+  <div class="stat"><b>18 de 18</b>errores de la sección 41–72 con la misma causa</div>
+  <div class="stat" style="margin-left:10px"><b>9 de 10</b>errores del simulacro de 46 con la misma causa</div>
+</div>
+
+
+<section>
+  <h2>El diagnóstico</h2>
+  <p class="sub">Qué tienen en común las opciones que elegiste</p>
+  <div class="card">
+    <p>Revisé las tres opciones de cada pregunta que fallaste y comparé la que marcaste contra la clave. El resultado es incómodamente consistente: <b>casi siempre elegiste la opción que organiza el trabajo, cuando la pregunta pedía la que define el criterio técnico.</b></p>
+    <p>Marcaste reuniones, cronogramas, comités, actas, repositorios, informes ejecutivos y redes de líderes. La clave nombraba matrices, indicadores, evidencias, triangulación, trazabilidad y criterios de decisión.</p>
+    <p>Eso no es ignorancia normativa. Es el reflejo de quien lleva años resolviendo problemas de aula, donde lo que destraba una situación efectivamente <em>es</em> convocar, reunir y acordar. En la gestión directiva, convocar es el medio; lo evaluado es qué queda definido.</p>
+  </div>
+
+  <div class="rule">
+    <div class="q">La pregunta detrás de la pregunta</div>
+    <p>El examen casi nunca pregunta <b>cómo organizarías el trabajo</b>. Pregunta <b>qué debe quedar técnicamente definido</b> para que ese trabajo sea verificable. Si una opción solo dice dónde y con quién te reúnes, es distractor.</p>
+  </div>
+</section>
+
+<section>
+  <h2>Tus propios errores, lado a lado</h2>
+  <p class="sub">Cuatro pares reales de tu simulacro. Las palabras resaltadas son las que deciden.</p>
+
+  <div class="par">
+    <div class="n">Pregunta 51 · Conectar el POA con el PMI y el PEI</div>
+    <div class="row x"><span class="tag">Marcaste</span><div>Alinear POA y PMI mediante <mark>cronograma de actividades, comités asignados y actas</mark>.</div></div>
+    <div class="row v"><span class="tag">Clave</span><div>Alinear POA y PMI mediante <mark class="g">objetivos, indicadores, responsables y recursos</mark>.</div></div>
+  </div>
+
+  <div class="par">
+    <div class="n">Pregunta 57 · Fragmentación de fuentes institucionales</div>
+    <div class="row x"><span class="tag">Marcaste</span><div>Integrar registros administrativos en <mark>repositorio digital</mark>, organizando actas, reportes y anexos.</div></div>
+    <div class="row v"><span class="tag">Clave</span><div>Integrar fuentes mediante <mark class="g">matriz de triangulación, validando confiabilidad, periodicidad y evidencias</mark>.</div></div>
+  </div>
+
+  <div class="par">
+    <div class="n">Pregunta 70 · Equipos que interpretan distinto lo acordado</div>
+    <div class="row x"><span class="tag">Marcaste</span><div>Precisar <mark>agenda de seguimiento mediante cronograma detallado</mark>, aclarando reuniones y entregas.</div></div>
+    <div class="row v"><span class="tag">Clave</span><div>Precisar acuerdos mediante <mark class="g">ficha común, aclarando criterios, contenidos y evidencias</mark>.</div></div>
+  </div>
+
+  <div class="par">
+    <div class="n">Pregunta 53 · Cada sede reporta con criterios distintos</div>
+    <div class="row x"><span class="tag">Marcaste</span><div>Socializar avances generales mediante <mark>reunión intersedes</mark>, destacando cumplimiento y dificultades.</div></div>
+    <div class="row v"><span class="tag">Clave</span><div>Socializar indicadores mediante <mark class="g">matriz que precisa definición, fuente, frecuencia, responsable, evidencia y uso</mark>.</div></div>
+  </div>
+
+  <p style="font-size:.9rem;color:var(--gray)">Fíjate en la 53: el problema declarado es que <em>los criterios difieren</em>. Una reunión no unifica criterios; los comenta. Solo la matriz los fija.</p>
+</section>
+
+<section>
+  <h2>Actualización · 28 de agosto de 2026</h2>
+  <p class="sub">Segunda muestra: 46 preguntas situacionales de gestión directiva. Resultado 36/46 (78 %).</p>
+
+  <div class="card">
+    <p>Un segundo simulacro permite comprobar si el diagnóstico anterior era una casualidad estadística o un hábito real. <b>Era un hábito.</b> En 9 de las 10 preguntas falladas marcaste una opción que <em>verifica, difunde o administra</em>, cuando la clave pedía una que <em>genera diálogo, análisis o modelado</em>.</p>
+    <p>Pero la muestra nueva aporta algo que la anterior no mostraba: el reflejo no es uno solo. Se ramifica en <b>dos formas distintas</b>, y una de ellas era un punto ciego invisible hasta ahora.</p>
+    <table>
+      <tr><th>Sub-eje</th><th>Aciertos</th><th>Lectura</th></tr>
+      <tr><td>Comunidad – <b>comunidad institucional</b></td><td><b>2/5</b></td><td>Punto ciego nuevo</td></tr>
+      <tr><td>Directiva – planeación y organización</td><td>5/8</td><td>Reincidencia</td></tr>
+      <tr><td>Directiva – ejecución</td><td>5/8</td><td>Reincidencia</td></tr>
+      <tr><td>Académica – pedagogía y didáctica</td><td>4/5</td><td>Casi limpio</td></tr>
+      <tr><td>Los otros cuatro sub-ejes</td><td>20/20</td><td>Dominados</td></tr>
+    </table>
+    <p style="margin-top:12px">Los 20 de 20 importan tanto como los errores: en talento humano, administración de recursos, interacción con el entorno e innovación académica no fallaste una sola. El sesgo no es general. <b>Aparece exactamente cuando la opción «de control» existe como carnada.</b></p>
+  </div>
+
+  <h3>Rama A · Medir el cumplimiento en lugar del impacto</h3>
+  <div class="par">
+    <div class="n">Pregunta 5 · Superar la apatía docente frente al PMI</div>
+    <div class="row x"><span class="tag">Marcaste</span><div>Implementar un <mark>sistema de seguimiento riguroso, verificando mensualmente el cumplimiento</mark> de las metas.</div></div>
+    <div class="row v"><span class="tag">Clave</span><div>Fomentar la <mark class="g">socialización y el análisis periódico de los avances, articulándolos con la práctica pedagógica</mark>.</div></div>
+  </div>
+  <div class="par">
+    <div class="n">Pregunta 10 · Comunicar criterios a un equipo que trabaja aislado</div>
+    <div class="row x"><span class="tag">Marcaste</span><div><mark>Auditar las planeaciones</mark> al finalizar el primer mes, retroalimentando los desvíos.</div></div>
+    <div class="row v"><span class="tag">Clave</span><div><mark class="g">Modelar la aplicación de los criterios en sesiones prácticas</mark> con los jefes de área.</div></div>
+  </div>
+  <div class="par">
+    <div class="n">Pregunta 45 · Evaluar la gestión propia y la del equipo</div>
+    <div class="row x"><span class="tag">Marcaste</span><div>Determinar el <mark>nivel de asistencia</mark> de los docentes a las formaciones.</div></div>
+    <div class="row v"><span class="tag">Clave</span><div>Analizar la efectividad de la estrategia y la <mark class="g">transferencia de lo aprendido al aula</mark>.</div></div>
+  </div>
+  <p style="font-size:.9rem;color:var(--gray)">La asistencia fue buena; el problema era que no se transfería. El enunciado te lo decía. Cuando el contexto ya informa que la actividad se cumplió pero el resultado no llegó, <b>medir otra vez la actividad no puede ser la respuesta</b>.</p>
+
+  <h3 style="margin-top:26px">Rama B · Informar hacia afuera en lugar de abrir canal de retorno</h3>
+  <p style="font-size:.93rem">Esta es la novedad. Los tres errores de comunidad institucional son el mismo error tres veces: elegiste el canal que <em>emite</em> y descartaste el que <em>recibe</em>.</p>
+  <div class="par">
+    <div class="n">Pregunta 21 · Padres apáticos ante las circulares impresas</div>
+    <div class="row x"><span class="tag">Marcaste</span><div>Establecer <mark>mensajería digital instantánea para difundir</mark> convocatorias y propuestas.</div></div>
+    <div class="row v"><span class="tag">Clave</span><div>Diseñar <mark class="g">encuestas de opinión para recoger las percepciones</mark> de los padres.</div></div>
+  </div>
+  <div class="par">
+    <div class="n">Pregunta 22 · Movilizar al estamento estudiantil</div>
+    <div class="row x"><span class="tag">Marcaste</span><div>Convocar al consejo estudiantil para <mark>delegar la recolección</mark> de propuestas.</div></div>
+    <div class="row v"><span class="tag">Clave</span><div>Organizar <mark class="g">debates en las aulas, sistematizando los aportes</mark> estudiantiles.</div></div>
+  </div>
+  <div class="par">
+    <div class="n">Pregunta 23 · Diversificar canales y asegurar bidireccionalidad</div>
+    <div class="row x"><span class="tag">Marcaste</span><div>Desarrollar <mark>campaña de expectativa en redes sociales</mark> invitando a las reuniones.</div></div>
+    <div class="row v"><span class="tag">Clave</span><div>Estrategia multicanal que informe los avances y <mark class="g">facilite la recepción de aportes</mark> de todos los estamentos.</div></div>
+  </div>
+
+  <div class="rule">
+    <div class="q">La regla de comunidad</div>
+    <p>En gestión de la comunidad, <b>la clave siempre devuelve la voz</b>. Difundir hacia afuera pierde; recoger aportes de vuelta gana. Y delegar en representantes formales —consejo estudiantil, voceros— también pierde cuando el enunciado pide movilizar a <em>todo</em> el estamento: centraliza la participación en pocos y no la promueve en muchos.</p>
+  </div>
+</section>
+
+<section>
+  <h2>Dos reglas nuevas de lectura</h2>
+  <p class="sub">Salen directamente de los errores del segundo simulacro y son aplicables a cualquier pregunta.</p>
+
+  <div class="card">
+    <h3>1. El verbo del aspecto evaluado manda</h3>
+    <p>Cada bloque declara qué se evalúa: «el Coordinador <em>promueve</em> la reflexión», «<em>comunica</em> con claridad y antelación», «<em>orienta</em> el trabajo pedagógico», «<em>evalúa</em> los resultados de la gestión». Ese verbo es el filtro.</p>
+    <p>Si el aspecto dice <b>promover, apropiar, orientar, comunicar</b>, entonces toda opción que diga <b>verificar, auditar, exigir, controlar</b> está descartada, por muy rigurosa que suene. En la pregunta 10 el aspecto era «comunica con claridad y antelación»: auditar al mes es control posterior, no comunicación anticipada. Con leer el verbo bastaba.</p>
+  </div>
+
+  <div class="card">
+    <h3>2. Lo que el contexto ya declaró fallido queda descartado</h3>
+    <p>Estas situaciones siempre incluyen una frase que dice qué no funcionó: «documentos extensos enviados por correo, escasamente leídos», «circulares impresas que los estudiantes extravían», «la formación teórica fue insuficiente», «reuniones tradicionales ineficaces».</p>
+    <p>Cualquier opción de esa misma familia está eliminada, <b>incluso si viene mejorada</b>. Remitir el documento «con acuse de recibo» sigue siendo remitir un documento. Cambiar la circular impresa por mensajería digital sigue siendo difundir. El examen premia cambiar de lógica, no de soporte.</p>
+  </div>
+</section>
+
+<section>
+  <h2>Vocabulario que decide</h2>
+  <p class="sub">Aprende a leer la primera cláusula de cada opción. Ahí está casi toda la información.</p>
+  <div class="vocab">
+    <div class="d">
+      <h4>Casi siempre distractor</h4>
+      <ul>
+        <li>reunión, jornada, encuentro</li>
+        <li>cronograma, calendario, agenda</li>
+        <li>comité, mesa técnica, red de líderes</li>
+        <li>acta, firma, compromiso firmado</li>
+        <li>repositorio, archivo, banco, carpeta</li>
+        <li>informe ejecutivo, boletín, tablero</li>
+        <li>capacitación externa, experto</li>
+        <li>concurso, reconocimiento, premiación</li>
+        <li>campaña, socialización, exposición</li>
+        <li>encuesta de satisfacción, percepción</li>
+        <li>porcentaje de cumplimiento, asistencia</li>
+        <li>auditar, verificar cumplimiento, acuse de recibo</li>
+        <li>difundir, mensajería, circular, publicar</li>
+        <li>delegar en voceros o representantes</li>
+        <li>reuniones individuales con cada docente</li>
+      </ul>
+    </div>
+    <div class="k">
+      <h4>Casi siempre clave</h4>
+      <ul>
+        <li>criterios, definición, fuente, frecuencia</li>
+        <li>indicadores con responsable y evidencia</li>
+        <li>matriz de alineación o triangulación</li>
+        <li>evidencias de aprendizaje, productos reales</li>
+        <li>trazabilidad, línea base</li>
+        <li>observación situada, diálogo pedagógico</li>
+        <li>retroalimentación formativa</li>
+        <li>ciclo permanente, seguimiento continuo</li>
+        <li>DUA, ajustes razonables, apoyos diferenciados</li>
+        <li>deliberación informada, participación diferenciada</li>
+        <li>relación explícita con PEI–POA–PMI o SIEE</li>
+        <li>recoger, recibir aportes, sistematizar percepciones</li>
+        <li>modelar, demostrar la aplicación en la práctica</li>
+        <li>transferencia al aula, impacto verificable</li>
+        <li>análisis de causas raíz</li>
+      </ul>
+    </div>
+  </div>
+  <div class="note" style="margin-top:16px"><b>Advertencia:</b> es una heurística, no una ley. Un comité puede ser la respuesta correcta si el enunciado pide justamente crear una instancia. Úsala para ordenar tus sospechas, no para responder sin leer.</div>
+</section>
+
+<section>
+  <h2>La escalera de complejidad</h2>
+  <p class="sub">Las preguntas de un mismo bloque van subiendo de nivel. La respuesta correcta sube con ellas.</p>
+  <div class="card">
+    <div class="step"><div class="lvl a">1</div><div><b>«¿Qué actuación inicial resulta más pertinente?»</b>
+      <small>Nivel diagnóstico. La clave es <b>caracterizar o indagar con fuentes múltiples</b>: matriz, triangulación, caracterización integral. Nunca actuar todavía.</small></div></div>
+    <div class="step"><div class="lvl b">2</div><div><b>«¿Qué decisión resulta más adecuada?»</b>
+      <small>Nivel de intervención. La clave es <b>una acción pedagógica con criterios y apoyos</b>: rutas flexibles, ficha común, apoyos diferenciados.</small></div></div>
+    <div class="step"><div class="lvl c">3</div><div><b>«En el nivel más complejo… ¿qué expresa mayor desempeño directivo?»</b>
+      <small>Nivel de sostenibilidad. Aquí <b>sí gana la opción sistémica</b>: cultura institucional de seguimiento, gobernanza participativa, arquitectura operativa, sistema institucional de información.</small></div></div>
+    <p style="margin-top:16px">Este tercer escalón te costó cuatro preguntas seguidas: 56, 64, 68 y 72. En las cuatro marcaste el dispositivo concreto —informe, red de líderes, tablero, comité— cuando el enunciado pedía explícitamente <em>sostener durante todo el ciclo</em>. Cuando leas «nivel más complejo» o «sostener durante todo el año», busca la opción que institucionaliza un sistema, no la que crea un artefacto.</p>
+  </div>
+</section>
+
+<section>
+  <h2>Los tres marcos que necesitas dominar</h2>
+  <p class="sub">No es mucha teoría. Es poca, pero hay que tenerla firme.</p>
+
+  <div class="card">
+    <h3>1. La cadena PEI → autoevaluación → PMI → POA</h3>
+    <p>Es el esqueleto de casi toda la sección 41–72. Cada pieza responde una pregunta distinta, y el error típico es confundirlas:</p>
+    <table>
+      <tr><th>Instrumento</th><th>Responde</th><th>Horizonte</th></tr>
+      <tr><td><b>PEI</b></td><td>¿Quiénes somos y hacia dónde vamos?</td><td>Identidad, largo plazo</td></tr>
+      <tr><td><b>Autoevaluación</b></td><td>¿Dónde estamos hoy, con qué evidencia?</td><td>Diagnóstico anual</td></tr>
+      <tr><td><b>PMI</b></td><td>¿Qué vamos a mejorar y cómo lo mediremos?</td><td>Metas, 1–3 años</td></tr>
+      <tr><td><b>POA</b></td><td>¿Qué se ejecuta este año, quién y con qué recursos?</td><td>Operación anual</td></tr>
+    </table>
+    <p style="margin-top:12px">La dirección importa: el diagnóstico alimenta el PMI, y el PMI baja al POA. Cuando una opción propone actualizar los documentos por redacción o por comité redactor sin pasar por evidencia y autoevaluación, está rompiendo la cadena. Por eso falló tu respuesta en la 49.</p>
+  </div>
+
+  <div class="card">
+    <h3>2. Anatomía de un indicador</h3>
+    <p>Un indicador bien formulado no es una meta ni una actividad. Tiene seis partes, y la pregunta 53 las lista textualmente en la opción correcta:</p>
+    <table>
+      <tr><th>Componente</th><th>Ejemplo</th></tr>
+      <tr><td><b>Definición</b></td><td>Porcentaje de estudiantes con apoyos DUA registrados en el PIAR</td></tr>
+      <tr><td><b>Fuente</b></td><td>Registro de orientación escolar</td></tr>
+      <tr><td><b>Frecuencia</b></td><td>Al cierre de cada periodo</td></tr>
+      <tr><td><b>Responsable</b></td><td>Coordinación académica</td></tr>
+      <tr><td><b>Evidencia</b></td><td>PIAR firmados y actas de seguimiento</td></tr>
+      <tr><td><b>Uso decisional</b></td><td>Ajustar la asignación de apoyos del siguiente periodo</td></tr>
+    </table>
+    <p style="margin-top:12px">Prueba rápida: «realizar tres jornadas de formación» no es indicador, es actividad. «Mejorar la convivencia» no es indicador, es aspiración. Si no puedes decir de dónde sale el dato y qué decisión cambia, no es indicador.</p>
+  </div>
+
+  <div class="card">
+    <h3>3. Cuándo lo interno no basta</h3>
+    <p>Tus errores 107 y 108 son de otra familia y merecen atención aparte, porque ahí el riesgo es real y no solo de puntaje.</p>
+    <p>Ante presunta alteración de registros, o ante hechos que puedan afectar derechos de estudiantes, elegiste la conversación restaurativa y el protocolo interno de protección. La clave era la <b>ruta formal de reporte</b> y la <b>denuncia con trazabilidad ante la autoridad competente</b>.</p>
+    <p>El criterio es este: lo restaurativo y lo pedagógico son herramientas legítimas para conflictos escolares, pero <b>no reemplazan el debido proceso</b> cuando hay posible vulneración de derechos o alteración de documentos. Y la presión para «cuidar la imagen institucional» es, en estas pruebas, siempre una señal de que la respuesta correcta es la formal y trazable.</p>
+  </div>
+</section>
+
+<section>
+  <h2>Autochequeo</h2>
+  <p class="sub">Cuatro decisiones con la misma estructura de las que fallaste. Elige antes de leer la explicación.</p>
+
+  <div class="drill" data-ok="B">
+    <div class="pregunta">Las sedes reportan la permanencia con formatos propios y los datos no son comparables. ¿Qué actuación inicial corresponde?</div>
+    <div class="opt" data-k="A">A. Convocar reunión intersedes para acordar un formato único y firmar el acta de compromiso.</div>
+    <div class="opt" data-k="B">B. Definir la ficha del indicador de permanencia, precisando fuente, periodicidad, responsable y evidencia.</div>
+    <div class="opt" data-k="C">C. Centralizar los reportes en un repositorio digital para consulta permanente de la rectoría.</div>
+    <div class="expl"><b>B.</b> El problema no es dónde se guardan los datos ni quién se reúne, sino que <em>no están definidos igual</em>. A y C son dispositivos; solo B fija el criterio.</div>
+  </div>
+
+  <div class="drill" data-ok="C">
+    <div class="pregunta">En el nivel más complejo, el rector quiere que el uso de indicadores se sostenga durante todo el año lectivo. ¿Qué expresa mayor desempeño directivo?</div>
+    <div class="opt" data-k="A">A. Mantener un tablero de control con porcentajes, alertas y reportes mensuales a rectoría.</div>
+    <div class="opt" data-k="B">B. Conformar un comité institucional de seguimiento con docentes, familias y estudiantes.</div>
+    <div class="opt" data-k="C">C. Instalar una cultura de seguimiento con interpretación pedagógica de los datos, devolución a los equipos y ajuste continuo.</div>
+    <div class="expl"><b>C.</b> «Nivel más complejo» + «sostener todo el año» = tercer escalón. El tablero (A) y el comité (B) son artefactos que pueden caer en desuso; C institucionaliza la práctica.</div>
+  </div>
+
+  <div class="drill" data-ok="A">
+    <div class="pregunta">Las familias de las sedes rurales no participan en la formulación del PMI por distancia y horarios laborales. ¿Qué decisión corresponde?</div>
+    <div class="opt" data-k="A">A. Diseñar rutas flexibles con horarios accesibles, apoyos comunicativos, mediación territorial y devolución comprensible de los aportes.</div>
+    <div class="opt" data-k="B">B. Difundir una campaña con piezas gráficas y mensajes radiales que motive la asistencia a las jornadas.</div>
+    <div class="opt" data-k="C">C. Elegir voceros por sede que representen a las familias en el comité de planeación.</div>
+    <div class="expl"><b>A.</b> La barrera es material: distancia y horarios. Motivar (B) no la remueve y delegar en voceros (C) la esquiva. Solo A ataca la causa. Es la misma lógica de los ajustes razonables del Decreto 1421.</div>
+  </div>
+
+  <div class="drill" data-ok="B">
+    <div class="pregunta">Aparecen inconsistencias entre las actas de convivencia y los reportes de asistencia, y varios actores sugieren resolverlo internamente para no afectar la imagen del colegio. ¿Qué corresponde?</div>
+    <div class="opt" data-k="A">A. Convocar a los implicados a una conversación restaurativa con acompañamiento y acuerdos pedagógicos.</div>
+    <div class="opt" data-k="B">B. Activar la ruta formal de reporte, preservando evidencias, confidencialidad y trazabilidad ante la autoridad competente.</div>
+    <div class="opt" data-k="C">C. Analizar el caso en comité interno con orientación escolar y representación de familias antes de decidir.</div>
+    <div class="expl"><b>B.</b> Hay posible alteración de documentos y presión para minimizar. Lo restaurativo (A) y el comité interno (C) no sustituyen el debido proceso. La presión por la imagen institucional es la señal.</div>
+  </div>
+
+  <h3 style="margin-top:26px">Tres más, sobre las ramas nuevas</h3>
+
+  <div class="drill" data-ok="C">
+    <div class="pregunta">Las familias reciben boletines mensuales del colegio pero no participan en ningún espacio institucional. El aspecto evaluado dice que el coordinador «promueve espacios de participación». ¿Qué corresponde?</div>
+    <div class="opt" data-k="A">A. Rediseñar el boletín con lenguaje más claro, infografías y un calendario visible de convocatorias.</div>
+    <div class="opt" data-k="B">B. Crear un grupo de difusión por mensajería instantánea para que la información llegue sin intermediarios.</div>
+    <div class="opt" data-k="C">C. Aplicar consultas periódicas que recojan las percepciones de las familias y devolverles cómo se usaron sus aportes.</div>
+    <div class="expl"><b>C.</b> A y B mejoran el <em>soporte</em> de una comunicación que sigue siendo unidireccional. Solo C abre retorno. Regla de comunidad: la clave devuelve la voz.</div>
+  </div>
+
+  <div class="drill" data-ok="A">
+    <div class="pregunta">Tras un semestre de talleres de metodologías activas con alta asistencia, los indicadores de uso en el aula no se movieron. ¿Qué actuación corresponde?</div>
+    <div class="opt" data-k="A">A. Acompañar en el aula modelando las metodologías con los docentes, sobre sus propias secuencias.</div>
+    <div class="opt" data-k="B">B. Ampliar la intensidad horaria de los talleres y exigir compromiso escrito de aplicación.</div>
+    <div class="opt" data-k="C">C. Consolidar un informe con los porcentajes de asistencia y avance para presentarlo al consejo directivo.</div>
+    <div class="expl"><b>A.</b> El contexto ya declaró fallida la formación teórica: B es la misma estrategia con más horas. C mide otra vez la actividad, no el impacto. Solo A cambia de lógica y ataca la transferencia.</div>
+  </div>
+
+  <div class="drill" data-ok="B">
+    <div class="pregunta">Se debe socializar una estrategia institucional con criterios técnicos específicos. Los envíos por correo del año pasado no fueron leídos. El aspecto evaluado dice «comunica a los equipos con claridad y antelación». ¿Qué corresponde?</div>
+    <div class="opt" data-k="A">A. Remitir el documento técnico solicitando acuse de recibo formal para verificar la lectura.</div>
+    <div class="opt" data-k="B">B. Dirigir jornadas por grados explicando los criterios técnicos y resolviendo inquietudes específicas.</div>
+    <div class="opt" data-k="C">C. Revisar al mes las planeaciones de aula para retroalimentar los desvíos frente a la estrategia.</div>
+    <div class="expl"><b>B.</b> A repite lo que ya falló, con un acuse encima. C es control posterior, y el verbo del aspecto es <em>comunicar con antelación</em>, no verificar. Dos reglas nuevas aplicadas en una sola pregunta.</div>
+  </div>
+</section>
+
+<section>
+  <h2>Cómo usar esto</h2>
+  <div class="card">
+    <p>No vuelvas todavía al simulador completo. Haz esto en orden:</p>
+    <p><b>1.</b> Filtra el simulador por la sección 41–72 y responde en modo estudio, pero antes de marcar, oblígate a decir en voz alta qué fija cada opción: ¿un medio o un criterio?</p>
+    <p><b>2.</b> Cuando el acierto en esa sección pase del 80 %, activa la casilla de barajar A, B y C. Si el acierto se mantiene, aprendiste el criterio; si cae, estabas recordando posiciones.</p>
+    <p><b>3.</b> Solo entonces vuelve al banco completo en modo simulacro con cronómetro.</p>
+    <p><b>4.</b> Nuevo: en el banco de errores, filtra por <b>«Errores Simulacro 46»</b> y trabaja primero las tres de comunidad institucional. Es tu punto ciego más caro y el más fácil de corregir, porque tiene una sola regla.</p>
+    <p style="margin-bottom:0">Antes de marcar cualquier opción, hazte las dos preguntas nuevas: <b>¿cuál es el verbo del aspecto evaluado?</b> y <b>¿qué declaró fallido el contexto?</b> Con esas dos habrías salvado 5 de las 10 falladas.</p>
+  </div>
+</section>
+</div>
+
+<div class="panel" id="pBitacora">
+<div class="hero">
+  <div class="eyebrow">Concurso directivo docente · Coordinación</div>
+  <h1>Bitácora de simulacros</h1>
+  <p>Cada intento registrado, su desempeño por sub-eje y la tendencia. Sirve para una sola cosa: comprobar si el patrón de error cede.</p>
+</div>
+
+
+<section>
+  <div class="kpis" id="kpis"></div>
+</section>
+
+<section>
+  <h2>Tendencia</h2>
+  <p class="sub">Porcentaje de acierto por intento, en orden cronológico.</p>
+  <div class="card">
+    <div class="chartbox" id="chart"></div>
+  </div>
+</section>
+
+<section>
+  <h2>Intentos registrados</h2>
+  <p class="sub">Del más reciente al más antiguo.</p>
+  <div class="card" style="padding:0;overflow:hidden">
+    <table>
+      <thead><tr><th>Fecha</th><th>Simulacro</th><th style="text-align:right">Puntaje</th><th style="text-align:right">%</th></tr></thead>
+      <tbody id="tbody"></tbody>
+    </table>
+  </div>
+</section>
+
+<section>
+  <h2>Desempeño por sub-eje</h2>
+  <p class="sub">Acumulado de los intentos que registran detalle. Rojo bajo 60 %, verde sobre 85 %.</p>
+  <div class="card" id="ejes"></div>
+</section>
+
+<section>
+  <h2>Registrar un intento nuevo</h2>
+  <p class="sub">Se guarda en este dispositivo y genera el código para dejarlo fijo en el archivo.</p>
+  <div class="card">
+    <div class="form">
+      <div><label for="fFecha">Fecha</label><input type="date" id="fFecha"></div>
+      <div><label for="fNombre">Simulacro</label><input type="text" id="fNombre" placeholder="Ej. Banco de errores · 58"></div>
+      <div><label for="fOk">Aciertos</label><input type="number" id="fOk" min="0" placeholder="36"></div>
+      <div><label for="fTot">Total de preguntas</label><input type="number" id="fTot" min="1" placeholder="46"></div>
+      <div class="full"><label for="fEjes">Detalle por sub-eje (opcional, una línea por eje: <code>nombre = aciertos/total</code>)</label>
+        <textarea id="fEjes" placeholder="Comunidad – comunidad institucional = 2/5&#10;Directiva – planeación = 5/8"></textarea></div>
+      <div class="full"><label for="fNota">Nota</label><input type="text" id="fNota" placeholder="Qué pasó, qué te costó"></div>
+    </div>
+    <div class="btnrow">
+      <button class="btn" id="btnAdd">Guardar intento</button>
+      <button class="btn ghost sm" id="btnCode">Ver código para el archivo</button>
+      <button class="btn ghost sm" id="btnClear">Borrar los guardados en este equipo</button>
+    </div>
+    <pre id="codeBox" class="hide"></pre>
+    <div class="note">Los intentos guardados aquí viven solo en este navegador. Para que queden permanentes y te sigan en cualquier dispositivo, pega el código generado dentro del bloque <code>const INTENTOS</code> al final del archivo y súbelo al repositorio.</div>
+  </div>
+</section>
+
+<section>
+  <div class="card">
+    <details>
+      <summary>Cómo agregar intentos editando el archivo</summary>
+      <p style="font-size:.89rem;margin:8px 0">Abre <code>historial_simulacros.html</code> en GitHub, busca <code>const INTENTOS</code> cerca del final y agrega un elemento más a la lista:</p>
+      <pre>{
+  fecha: "2026-09-15",
+  nombre: "Banco de errores · 58",
+  ok: 50, total: 58,
+  nota: "Segunda vuelta tras la guía.",
+  ejes: { "Comunidad – comunidad institucional": [4,5] }
+}</pre>
+      <p style="font-size:.89rem;margin:8px 0 0"><b>fecha</b> en formato año-mes-día. <b>ejes</b> es opcional; si lo omites, el intento cuenta en la tendencia pero no en las barras por sub-eje.</p>
+    </details>
+  </div>
+</section>
+</div>
+
+</div>
 
 <footer>
   Carlos Alberto Mena Romaña<br>
@@ -120,6 +745,31 @@ footer{text-align:center;color:var(--gray);font-size:.78rem;
 </footer>
 
 <script>
+/* ═══════════ NAVEGACIÓN POR PESTAÑAS ═══════════ */
+(function(){
+  var mapa = { materiales:'pMateriales', guia:'pGuia', bitacora:'pBitacora' };
+  function abrir(k, empujar){
+    if(!mapa[k]) k = 'materiales';
+    document.querySelectorAll('.panel').forEach(function(p){ p.classList.remove('on'); });
+    document.querySelectorAll('.tab').forEach(function(t){
+      var on = t.dataset.p === k;
+      t.classList.toggle('on', on);
+      t.setAttribute('aria-selected', on ? 'true' : 'false');
+    });
+    document.getElementById(mapa[k]).classList.add('on');
+    if(empujar && location.hash !== '#'+k) history.replaceState(null,'','#'+k);
+    if(k === 'bitacora' && window.__bitacora) window.__bitacora();
+    window.scrollTo({top:0});
+  }
+  document.querySelectorAll('.tab').forEach(function(t){
+    t.addEventListener('click', function(){ abrir(t.dataset.p, true); });
+  });
+  window.addEventListener('hashchange', function(){ abrir(location.hash.replace('#',''), false); });
+  abrir(location.hash.replace('#','') || 'materiales', false);
+})();
+
+/* ═══════════ PESTAÑA 1 · MATERIALES ═══════════ */
+(function(){
 /* ══════════════════════════════════════════════════════════════
    LISTA DE MATERIALES — edita solo aquí para agregar cosas nuevas
    ══════════════════════════════════════════════════════════════ */
@@ -134,22 +784,13 @@ const RECURSOS = [
     nuevo: true
   },
   {
-    titulo: "Banco de errores · Super Simulacro 12",
+    titulo: "Banco de errores · 58 preguntas",
     archivo: "simulador_prueba_directivo.html",
-    resumen: "Las 48 preguntas que fallaste en el simulacro presentado, con la clave contrastada contra la retroalimentación oficial y justificación de cada respuesta.",
+    resumen: "Las 48 preguntas falladas en el Super Simulacro 12 más las 10 del simulacro de 46 casos, con clave contrastada y justificación de cada respuesta.",
     categoria: "Simulacros",
     icono: "🎯",
-    meta: ["48 preguntas", "clave verificada"],
-    nuevo: false
-  },
-  {
-    titulo: "Guía · El reflejo del docente",
-    archivo: "guia_gestion_institucional.html",
-    resumen: "El patrón que explica tus errores en gestión institucional, el vocabulario que distingue distractor de clave, la escalera de complejidad y los marcos que hay que tener firmes.",
-    categoria: "Guías de estudio",
-    icono: "🧭",
-    meta: ["lectura", "20 min", "4 ejercicios"],
-    nuevo: false
+    meta: ["58 preguntas", "clave verificada"],
+    nuevo: true
   },
   {
     titulo: "Simulacro focalizado · 46 preguntas",
@@ -224,6 +865,259 @@ function pintarLista(){
 
 pintarFiltros();
 pintarLista();
+})();
+
+/* ═══════════ PESTAÑA 2 · GUÍA ═══════════ */
+(function(){
+document.querySelectorAll('.drill').forEach(function(d){
+  var ok = d.dataset.ok, resuelto = false;
+  d.querySelectorAll('.opt').forEach(function(o){
+    o.addEventListener('click', function(){
+      if(resuelto) return; resuelto = true;
+      d.querySelectorAll('.opt').forEach(function(x){
+        if(x.dataset.k === ok) x.classList.add('ok');
+        else if(x === o) x.classList.add('no');
+      });
+      d.querySelector('.expl').classList.add('on');
+    });
+  });
+});
+})();
+
+/* ═══════════ PESTAÑA 3 · BITÁCORA ═══════════ */
+(function(){
+/* ══════════════════════════════════════════════════════════════
+   INTENTOS — edita solo aquí para dejar resultados permanentes
+   ══════════════════════════════════════════════════════════════ */
+const INTENTOS = [
+  {
+    fecha: "",
+    nombre: "Super Simulacro #12 · 140 preguntas",
+    ok: 91, total: 140,
+    nota: "Prueba completa de seis secciones. 48 errores catalogados; 18 de ellos en PEI–POA–PMI e indicadores (41–72). Origen del banco de errores y de la guía."
+  },
+  {
+    fecha: "2026-08-28",
+    nombre: "Simulacro focalizado · 46 casos situacionales",
+    ok: 36, total: 46,
+    nota: "Diez falladas. En nueve de ellas se marcó una opción que verifica, difunde o administra, cuando la clave pedía diálogo, análisis o modelado.",
+    ejes: {
+      "Directiva – planeación y organización": [5,8],
+      "Directiva – ejecución": [5,8],
+      "Administrativa – administración de recursos": [5,5],
+      "Administrativa – gestión del talento humano": [5,5],
+      "Comunidad – comunidad institucional": [2,5],
+      "Comunidad – interacción con el entorno": [5,5],
+      "Académica – pedagogía y didáctica": [4,5],
+      "Académica – innovación y direccionamiento": [5,5]
+    }
+  }
+];
+/* ══════════════ fin de la lista editable ══════════════ */
+
+var LS = {
+  get: function(k){ try { return JSON.parse(localStorage.getItem(k) || 'null'); } catch(e){ return null; } },
+  set: function(k,v){ try { localStorage.setItem(k, JSON.stringify(v)); return true; } catch(e){ return false; } },
+  del: function(k){ try { localStorage.removeItem(k); } catch(e){} }
+};
+var KEY = 'bitacoraSimulacros';
+
+function esc(t){ return String(t==null?'':t)
+  .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+
+function locales(){ var v = LS.get(KEY); return Array.isArray(v) ? v : []; }
+
+function todos(){
+  var a = INTENTOS.concat(locales()).map(function(x,i){
+    var o = Object.assign({}, x);
+    o.pct = o.total ? Math.round(o.ok / o.total * 1000) / 10 : 0;
+    o._i = i;
+    return o;
+  });
+  a.sort(function(x,y){
+    if(x.fecha && y.fecha) return x.fecha < y.fecha ? -1 : (x.fecha > y.fecha ? 1 : x._i - y._i);
+    if(x.fecha && !y.fecha) return 1;
+    if(!x.fecha && y.fecha) return -1;
+    return x._i - y._i;
+  });
+  return a;
+}
+
+function fechaLarga(f){
+  if(!f) return 'Sin fecha';
+  var p = f.split('-');
+  var M = ['ene','feb','mar','abr','may','jun','jul','ago','sep','oct','nov','dic'];
+  return p[2].replace(/^0/,'') + ' ' + M[parseInt(p[1],10)-1] + ' ' + p[0];
+}
+
+function clase(p){ return p >= 85 ? 'ok' : (p >= 70 ? 'warn' : 'bad'); }
+
+/* ── KPIs ── */
+function pintarKpis(L){
+  var box = document.getElementById('kpis');
+  if(!L.length){ box.innerHTML = '<div class="kpi"><b>0</b><span>Sin intentos</span></div>'; return; }
+  var ult = L[L.length-1];
+  var mejor = L.reduce(function(a,b){ return b.pct > a.pct ? b : a; });
+  var prom = Math.round(L.reduce(function(s,x){ return s + x.pct; }, 0) / L.length * 10) / 10;
+  var delta = L.length > 1 ? Math.round((ult.pct - L[L.length-2].pct) * 10) / 10 : null;
+  var dCls = delta === null ? '' : (delta > 0 ? ' up' : (delta < 0 ? ' down' : ''));
+  var dTxt = delta === null ? '—' : (delta > 0 ? '+' : '') + delta + '%';
+  box.innerHTML =
+      '<div class="kpi"><b>' + L.length + '</b><span>Intentos</span></div>'
+    + '<div class="kpi"><b>' + ult.pct + '%</b><span>Último</span></div>'
+    + '<div class="kpi"><b>' + mejor.pct + '%</b><span>Mejor marca</span></div>'
+    + '<div class="kpi' + dCls + '"><b>' + dTxt + '</b><span>Frente al anterior</span></div>';
+}
+
+/* ── gráfico de línea en SVG puro ── */
+function pintarChart(L){
+  var box = document.getElementById('chart');
+  if(L.length < 2){
+    box.innerHTML = '<p style="font-size:.9rem;color:var(--gray)">Con un solo intento no hay tendencia que mostrar. Registra el siguiente y aparecerá la línea.</p>';
+    return;
+  }
+  var W = Math.max(560, L.length * 130), H = 260,
+      ml = 44, mr = 18, mt = 22, mb = 52;
+  var iw = W - ml - mr, ih = H - mt - mb;
+  var X = function(i){ return ml + (L.length === 1 ? iw/2 : i * iw / (L.length - 1)); };
+  var Y = function(p){ return mt + ih - (p / 100) * ih; };
+
+  var s = '<svg viewBox="0 0 ' + W + ' ' + H + '" role="img" aria-label="Tendencia de porcentaje de acierto por intento">';
+  [0,25,50,75,100].forEach(function(v){
+    s += '<line class="gl" x1="' + ml + '" y1="' + Y(v) + '" x2="' + (W-mr) + '" y2="' + Y(v) + '"/>'
+       + '<text class="gt" x="' + (ml-9) + '" y="' + (Y(v)+4) + '" text-anchor="end">' + v + '%</text>';
+  });
+  var pts = L.map(function(d,i){ return X(i) + ',' + Y(d.pct); }).join(' ');
+  s += '<polygon class="area" points="' + ml + ',' + Y(0) + ' ' + pts + ' ' + X(L.length-1) + ',' + Y(0) + '" opacity=".1"/>';
+  var len = 0;
+  for(var i=1;i<L.length;i++){
+    len += Math.sqrt(Math.pow(X(i)-X(i-1),2) + Math.pow(Y(L[i].pct)-Y(L[i-1].pct),2));
+  }
+  s += '<polyline class="line" style="--len:' + Math.ceil(len) + '" points="' + pts + '"/>';
+  L.forEach(function(d,i){
+    var x = X(i), y = Y(d.pct);
+    s += '<circle class="dot" cx="' + x + '" cy="' + y + '" r="6" style="animation-delay:' + (0.9 + i*0.12) + 's"/>'
+       + '<text class="gt b" x="' + x + '" y="' + (y-14) + '" text-anchor="middle">' + d.pct + '%</text>'
+       + '<text class="gt" x="' + x + '" y="' + (H-30) + '" text-anchor="middle">' + esc(d.ok + '/' + d.total) + '</text>'
+       + '<text class="gt" x="' + x + '" y="' + (H-14) + '" text-anchor="middle">' + esc(d.fecha ? fechaLarga(d.fecha) : 'previo') + '</text>';
+  });
+  s += '</svg>';
+  box.innerHTML = s;
+}
+
+/* ── tabla ── */
+function pintarTabla(L){
+  var b = document.getElementById('tbody');
+  if(!L.length){ b.innerHTML = '<tr><td colspan="4">Aún no hay intentos.</td></tr>'; return; }
+  b.innerHTML = L.slice().reverse().map(function(d){
+    return '<tr><td>' + esc(fechaLarga(d.fecha)) + '</td>'
+      + '<td><b>' + esc(d.nombre) + '</b>'
+      + (d.nota ? '<span class="mini">' + esc(d.nota) + '</span>' : '')
+      + (d.local ? '<span class="mini"><i>solo en este equipo</i></span>' : '') + '</td>'
+      + '<td class="n">' + d.ok + '/' + d.total + '</td>'
+      + '<td class="n"><span class="pill ' + clase(d.pct) + '">' + d.pct + '%</span></td></tr>';
+  }).join('');
+}
+
+/* ── barras por sub-eje ── */
+function pintarEjes(L){
+  var box = document.getElementById('ejes'), acc = {};
+  L.forEach(function(d){
+    if(!d.ejes) return;
+    Object.keys(d.ejes).forEach(function(k){
+      if(!acc[k]) acc[k] = [0,0];
+      acc[k][0] += d.ejes[k][0];
+      acc[k][1] += d.ejes[k][1];
+    });
+  });
+  var ks = Object.keys(acc);
+  if(!ks.length){
+    box.innerHTML = '<p style="font-size:.9rem;color:var(--gray)">Ningún intento registra detalle por sub-eje todavía.</p>';
+    return;
+  }
+  ks.sort(function(a,b){ return (acc[a][0]/acc[a][1]) - (acc[b][0]/acc[b][1]); });
+  box.innerHTML = ks.map(function(k){
+    var o = acc[k][0], t = acc[k][1], p = Math.round(o/t*100);
+    var c = p >= 85 ? 'good' : (p < 60 ? 'risk' : '');
+    return '<div class="eje"><div class="top"><span>' + esc(k) + '</span><b>' + o + '/' + t + ' · ' + p + '%</b></div>'
+      + '<div class="bar"><i class="' + c + '" data-w="' + p + '"></i></div></div>';
+  }).join('');
+  requestAnimationFrame(function(){
+    box.querySelectorAll('.bar>i').forEach(function(i){ i.style.width = i.dataset.w + '%'; });
+  });
+}
+
+/* ── formulario ── */
+function parseEjes(txt){
+  var o = {}, n = 0;
+  txt.split('\n').forEach(function(l){
+    var m = l.match(/^\s*(.+?)\s*=\s*(\d+)\s*\/\s*(\d+)\s*$/);
+    if(m){ o[m[1]] = [parseInt(m[2],10), parseInt(m[3],10)]; n++; }
+  });
+  return n ? o : null;
+}
+
+function leerForm(){
+  var ok = parseInt(document.getElementById('fOk').value,10);
+  var tot = parseInt(document.getElementById('fTot').value,10);
+  if(isNaN(ok) || isNaN(tot) || tot < 1 || ok < 0 || ok > tot){
+    alert('Revisa los aciertos y el total: los aciertos no pueden superar el total.');
+    return null;
+  }
+  var d = {
+    fecha: document.getElementById('fFecha').value || '',
+    nombre: document.getElementById('fNombre').value.trim() || 'Simulacro sin nombre',
+    ok: ok, total: tot,
+    nota: document.getElementById('fNota').value.trim()
+  };
+  var e = parseEjes(document.getElementById('fEjes').value);
+  if(e) d.ejes = e;
+  return d;
+}
+
+document.getElementById('btnAdd').addEventListener('click', function(){
+  var d = leerForm(); if(!d) return;
+  d.local = true;
+  var arr = locales(); arr.push(d);
+  if(!LS.set(KEY, arr)){
+    alert('Este navegador no permite guardar. Usa el botón «Ver código para el archivo» y pégalo en el repositorio.');
+    return;
+  }
+  ['fNombre','fOk','fTot','fNota','fEjes'].forEach(function(id){ document.getElementById(id).value=''; });
+  render();
+  window.scrollTo({top:0, behavior:'smooth'});
+});
+
+document.getElementById('btnCode').addEventListener('click', function(){
+  var d = leerForm(); if(!d) return;
+  var t = '{\n  fecha: "' + d.fecha + '",\n  nombre: "' + d.nombre.replace(/"/g,'\\"') + '",\n'
+        + '  ok: ' + d.ok + ', total: ' + d.total + ',\n'
+        + '  nota: "' + (d.nota||'').replace(/"/g,'\\"') + '"';
+  if(d.ejes){
+    t += ',\n  ejes: {\n' + Object.keys(d.ejes).map(function(k){
+      return '    "' + k.replace(/"/g,'\\"') + '": [' + d.ejes[k][0] + ',' + d.ejes[k][1] + ']';
+    }).join(',\n') + '\n  }';
+  }
+  t += '\n}';
+  var box = document.getElementById('codeBox');
+  box.textContent = t;
+  box.classList.remove('hide');
+});
+
+document.getElementById('btnClear').addEventListener('click', function(){
+  if(!locales().length){ alert('No hay intentos guardados en este equipo.'); return; }
+  if(confirm('¿Borrar los intentos guardados en este navegador? Los que están escritos en el archivo no se tocan.')){
+    LS.del(KEY); render();
+  }
+});
+
+function render(){
+  var L = todos();
+  pintarKpis(L); pintarChart(L); pintarTabla(L); pintarEjes(L);
+}
+render();
+window.__bitacora = render;
+})();
 </script>
 </body>
 </html>
