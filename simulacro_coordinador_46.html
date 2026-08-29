@@ -603,7 +603,7 @@ const SITUACIONES = [
 
 /* ====================== ESTADO ====================== */
 const LETRAS=["A","B","C"];
-let PLANO=[], idx=0, modo="guiada", respuestas=[], sitAbierta=true;
+let PLANO=[], idx=0, modo="guiada", respuestas=[], sitAbierta=true, sitPrevia=null;
 
 function aplanar(lista){
   const out=[];
@@ -615,7 +615,7 @@ function iniciar(m){
   modo=m;
   PLANO=aplanar(SITUACIONES);
   respuestas=new Array(PLANO.length).fill(null);
-  idx=0;
+  idx=0; sitPrevia=null; sitAbierta=true;
   document.getElementById('start').classList.add('hidden');
   document.getElementById('results').classList.add('hidden');
   document.getElementById('quiz').classList.remove('hidden');
@@ -627,7 +627,7 @@ function repetirFalladas(){
   if(!malas.length){ alert("No hay preguntas falladas. Buen trabajo."); return; }
   PLANO = malas;
   respuestas = new Array(PLANO.length).fill(null);
-  idx=0;
+  idx=0; sitPrevia=null; sitAbierta=true;
   document.getElementById('results').classList.add('hidden');
   document.getElementById('quiz').classList.remove('hidden');
   window.scrollTo({top:0});
@@ -636,7 +636,9 @@ function repetirFalladas(){
 
 function toggleSit(){
   sitAbierta=!sitAbierta;
-  document.getElementById('sitCard').classList.toggle('closed', !sitAbierta);
+  const c=document.getElementById('sitCard');
+  c.dataset.tocado = sitAbierta ? "1" : "";
+  c.classList.toggle('closed', !sitAbierta);
 }
 
 function pintar(){
@@ -647,7 +649,13 @@ function pintar(){
   document.getElementById('sitTitle').textContent = q.sit.titulo + " · " + q.sit.rango;
   document.getElementById('sitBody').innerHTML =
     '<p>'+q.sit.texto+'</p><p style="margin:0"><span class="tag warm">'+q.sit.subeje+'</span></p>';
+  // El caso se abre solo al entrar a una situación nueva y se pliega dentro de la
+  // misma: así se lee una vez por situación, no una vez por pregunta.
+  if(q.sit.id !== sitPrevia){ sitAbierta = true; sitPrevia = q.sit.id; }
+  else if(!document.getElementById('sitCard').dataset.tocado){ sitAbierta = false; }
   document.getElementById('sitCard').classList.toggle('closed', !sitAbierta);
+  document.getElementById('sitTitle').innerHTML = q.sit.titulo + " · " + q.sit.rango
+    + (sitAbierta ? '' : ' <span style="color:var(--orange);font-weight:normal;font-size:12px">· misma situación</span>');
 
   // Pregunta
   const card=document.getElementById('qCard');
