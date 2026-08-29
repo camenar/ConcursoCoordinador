@@ -53,6 +53,8 @@ select:focus,input:focus{outline:none;border-color:var(--orange)}
 .ctx .h button{background:none;border:1px solid var(--navy);color:var(--navy);border-radius:6px;font-size:.72rem;padding:3px 9px;cursor:pointer;font-family:inherit}
 .ctx img{max-width:100%;height:auto;border-radius:6px;border:1px solid var(--line);margin:8px 0}
 .ctx.mini .body{display:none}
+.ctx .h .same{margin-left:auto;font-style:normal;font-weight:normal;text-transform:none;letter-spacing:0;font-size:.72rem;color:var(--orange);background:#fdf1e3;border-radius:20px;padding:2px 10px;white-space:nowrap}
+.ctx .h .same + button{margin-left:8px}
 .qnum{color:var(--orange);font-weight:bold;font-size:.8rem;letter-spacing:1px;text-transform:uppercase}
 .enun{font-weight:bold;color:var(--navy);font-size:1.03rem;margin:6px 0 16px}
 .op{display:flex;gap:12px;border:2px solid var(--line);border-radius:10px;padding:13px 15px;margin-bottom:11px;cursor:pointer;transition:.12s;background:#fff;font-size:.94rem}
@@ -287,17 +289,27 @@ function start(){
   let pool = filtrar();
   const n = parseInt($('#fCant').value,10);
 
+  // Las preguntas de una misma situación viajan siempre juntas y en su orden
+  // original: el contexto se lee una sola vez por grupo, no una vez por pregunta.
+  const grupos = [], idx = {};
+  pool.forEach(q => {
+    const k = q.sec + '||' + q.bloque;
+    if(idx[k] === undefined){ idx[k] = grupos.length; grupos.push([]); }
+    grupos[idx[k]].push(q);
+  });
+
   if($('#fOrden').value==='rnd'){
     const vistas = store('vistas') || {};
-    shuffle(pool);
-    // rotación: entran primero las preguntas menos practicadas, así un intento
+    shuffle(grupos);
+    // rotación: entran primero las situaciones menos practicadas, así un intento
     // no repite el mismo subconjunto del anterior
-    pool.sort((a,b)=>(vistas[a.num]||0)-(vistas[b.num]||0));
-    S.lista = shuffle(pool.slice(0,n));
+    const media = g => g.reduce((s,q)=>s+(vistas[q.num]||0),0)/g.length;
+    grupos.sort((a,b)=>media(a)-media(b));
+    S.lista = tomar(grupos, n);
     S.lista.forEach(q => vistas[q.num] = (vistas[q.num]||0)+1);
     store('vistas', vistas);
   } else {
-    S.lista = pool.slice(0,n);
+    S.lista = tomar(grupos, n);
   }
 
   S.i=0; S.resp={}; S.flags={}; S.revelada={}; S.perm={};
@@ -308,6 +320,18 @@ function start(){
   if(S.modo==='simulacro'){ $('#clock').classList.remove('hide'); S.timer=setInterval(tick,1000); tick(); }
   else $('#clock').classList.add('hide');
   show('scTest'); render();
+}
+
+/* Toma situaciones completas hasta acercarse a n. Nunca parte una situación por
+   la mitad; si la primera ya excede n, la deja entera. */
+function tomar(grupos, n){
+  const out = [];
+  for(const g of grupos){
+    if(out.length && out.length + g.length > n) continue;
+    out.push(...g);
+    if(out.length >= n) break;
+  }
+  return out.length ? out : grupos[0].slice();
 }
 
 function tick(){
@@ -325,8 +349,11 @@ function render(){
   $('#cnt').textContent = (S.i+1)+' / '+S.lista.length;
   $('#prog').style.width = ((S.i)/S.lista.length*100)+'%';
   const body = q.ctx.map(p => p==='@@IMG@@' ? `<img src="${IMG}" alt="Caricatura de cuatro viñetas">` : `<p>${esc(p)}</p>`).join('');
-  $('#ctxBox').className = 'ctx';
-  $('#ctxBox').innerHTML = `<div class="h"><span>${esc(q.ctx_title)}</span><button type="button" id="tgCtx">ocultar</button></div><div class="body">${body}</div>`;
+  const prev = S.i>0 ? S.lista[S.i-1] : null;
+  const repite = prev && prev.ctx_title === q.ctx_title;
+  $('#ctxBox').className = repite ? 'ctx mini' : 'ctx';
+  const aviso = repite ? '<em class="same">misma situación</em>' : '';
+  $('#ctxBox').innerHTML = `<div class="h"><span>${esc(q.ctx_title)}</span>${aviso}<button type="button" id="tgCtx">${repite?'mostrar':'ocultar'}</button></div><div class="body">${body}</div>`;
   $('#tgCtx').onclick = e => { const c=$('#ctxBox'); c.classList.toggle('mini'); e.target.textContent = c.classList.contains('mini')?'mostrar':'ocultar'; };
   $('#qnum').innerHTML = 'Pregunta original N.º '+q.num
     + (q.verif ? ' <span class="vb">✓ clave oficial</span>' : '')
