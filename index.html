@@ -136,6 +136,21 @@ footer{text-align:center;color:var(--gray);font-size:.78rem;
 #pGuia h3{color:var(--navy);font-size:1rem;margin:24px 0 8px}
 #pGuia p{margin-bottom:13px}
 #pGuia .card{background:var(--card);border-radius:12px;padding:24px;box-shadow:0 2px 10px rgba(31,42,110,.07);margin-bottom:18px}
+#pGuia .vbar{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;
+  border-left:5px solid var(--navy);background:#eef1f9;border-radius:0 10px 10px 0;
+  padding:12px 16px;margin:34px 0 4px}
+#pGuia .vbar b{color:var(--navy);font-size:.95rem}
+#pGuia .vbar .fecha{color:var(--gray);font-size:.83rem}
+#pGuia .vbar .estado{margin-left:auto;font-size:.72rem;font-weight:bold;text-transform:uppercase;
+  letter-spacing:.6px;border-radius:20px;padding:3px 11px;white-space:nowrap}
+#pGuia .vbar .estado.viva{background:var(--ok-bg);color:var(--ok)}
+#pGuia .vbar .estado.matiz{background:var(--warn-bg);color:var(--warn)}
+#pGuia .vbar.v3{border-left-color:var(--orange);background:#fdf3e9}
+#pGuia .linea{border-collapse:collapse;width:100%;font-size:.86rem;margin-top:6px}
+#pGuia .linea th{background:#eef1f9;color:var(--navy);font-size:.7rem;text-transform:uppercase;
+  letter-spacing:.5px;padding:8px;text-align:left}
+#pGuia .linea td{padding:9px 8px;border-bottom:1px solid var(--line);vertical-align:top}
+#pGuia .linea td.v{font-weight:bold;color:var(--navy);white-space:nowrap}
 #pGuia .rule{background:var(--navy);color:#fff;border-radius:12px;padding:26px 28px;margin:22px 0}
 #pGuia .rule .q{font-size:1.12rem;font-weight:bold;color:#ffcf9e;margin-bottom:10px}
 #pGuia .rule p{opacity:.94;margin-bottom:0}
@@ -352,11 +367,33 @@ table{width:100%;border-collapse:collapse;font-size:.88rem}
 <div class="hero">
   <div class="eyebrow">Concurso directivo docente · Coordinación</div>
   <h1>No te falta conocimiento.<br>Te sobra <em>reflejo de docente</em>.</h1>
-  <p>Un solo hábito de razonamiento explica los 18 errores de tu sección más débil, y reaparece en la mayoría de los demás. Identificarlo vale más que estudiar cien preguntas nuevas.</p>
-  <div class="stat"><b>18 de 18</b>errores de la sección 41–72 con la misma causa</div>
-  <div class="stat" style="margin-left:10px"><b>9 de 10</b>errores del simulacro de 46 con la misma causa</div>
+  <p>Documento vivo, en tres versiones. Cada simulacro se contrasta contra el diagnóstico anterior y lo confirma, lo matiza o lo corrige. <b>Las versiones antiguas no se borran</b>: leerlas en orden muestra cómo se mueve el reflejo cuando uno lo trabaja.</p>
+  <div class="stat"><b>3</b>lecturas del patrón</div>
+  <div class="stat" style="margin-left:10px"><b>27</b>errores analizados uno por uno</div>
 </div>
 
+
+<section>
+  <h2>Línea de tiempo del reflejo</h2>
+  <p class="sub">Las tres lecturas, en orden. Cada una nació de un simulacro distinto.</p>
+  <div class="card">
+    <table class="linea">
+      <tr><th>Versión</th><th>Instrumento</th><th>Qué dijo</th></tr>
+      <tr><td class="v">V1<br><span style="font-weight:normal;color:var(--gray);font-size:.78rem">agosto</span></td>
+        <td>Super Simulacro #12<br><b>91/140</b></td>
+        <td>Eliges <b>el medio organizativo</b> (reunir, convocar, acordar) cuando la pregunta pide <b>el criterio técnico</b> (matriz, indicador, evidencia).</td></tr>
+      <tr><td class="v">V2<br><span style="font-weight:normal;color:var(--gray);font-size:.78rem">28 ago</span></td>
+        <td>Simulacro focalizado · 46 casos<br><b>36/46</b></td>
+        <td>Se confirma y se ramifica: <b>medir cumplimiento</b> en vez de impacto, e <b>informar</b> en vez de abrir retorno. Punto ciego nuevo: comunidad institucional.</td></tr>
+      <tr><td class="v">V3<br><span style="font-weight:normal;color:var(--gray);font-size:.78rem">9 sep</span></td>
+        <td>Evaluación y Gestión Pedagógica<br><b>37/46</b> · 38 corregido</td>
+        <td><b>El sesgo se invierte.</b> Ahora eliges lo colegial y formativo sobre lo que deja evidencia verificable. Aparece la regla que unifica las tres.</td></tr>
+    </table>
+    <p style="font-size:.88rem;color:var(--gray);margin:14px 0 0">Si vas con prisa, lee la <b>Versión 3</b>: contiene la regla que reemplaza a las anteriores. Si quieres entender por qué llegaste ahí, léelas en orden.</p>
+  </div>
+</section>
+
+<div class="vbar"><b>Versión 1 · Super Simulacro #12</b><span class="fecha">agosto de 2026 · 91/140</span><span class="estado matiz">vigente con matices</span></div>
 
 <section>
   <h2>El diagnóstico</h2>
@@ -403,6 +440,8 @@ table{width:100%;border-collapse:collapse;font-size:.88rem}
 
   <p style="font-size:.9rem;color:var(--gray)">Fíjate en la 53: el problema declarado es que <em>los criterios difieren</em>. Una reunión no unifica criterios; los comenta. Solo la matriz los fija.</p>
 </section>
+
+<div class="vbar"><b>Versión 2 · Simulacro focalizado de 46 casos</b><span class="fecha">28 de agosto de 2026 · 36/46</span><span class="estado matiz">vigente con matices</span></div>
 
 <section>
   <h2>Actualización · 28 de agosto de 2026</h2>
@@ -481,6 +520,65 @@ table{width:100%;border-collapse:collapse;font-size:.88rem}
   </div>
 </section>
 
+<div class="vbar v3"><b>Versión 3 · Evaluación y Gestión Pedagógica</b><span class="fecha">9 de septiembre de 2026 · 37/46 (38 corregido)</span><span class="estado viva">lectura vigente</span></div>
+
+<section>
+  <h2>El reflejo se dio la vuelta</h2>
+  <p class="sub">Tercera medición. Lo que pasa cuando una corrección se aplica demasiado bien.</p>
+
+  <div class="card">
+    <p>Las dos versiones anteriores decían lo mismo con distintas palabras: elegías <em>controlar, verificar, informar</em> cuando la clave pedía <em>reflexionar, dialogar, modelar</em>. Trabajaste eso. Y funcionó, pero de más.</p>
+    <p>En este simulacro, <b>5 de los 8 errores reales</b> son el movimiento contrario: elegiste la opción <b>colegial o formativa</b> —mentoría entre pares, comunidad de práctica, taller de comprensión— sobre la que traía <b>trazabilidad y evidencia verificable</b>.</p>
+    <p>No es que la mentoría entre pares esté mal. Es pedagógicamente valiosa y en otro examen sería la clave. Pero cuando el enunciado dice <em>«evidencias robustas»</em>, <em>«comparables»</em>, <em>«trazabilidad»</em> o fija un plazo de ocho semanas, una estrategia de cadencia mensual y registro heterogéneo no puede ganar.</p>
+  </div>
+
+  <h3>Los cinco de la sobrecorrección</h3>
+  <div class="par">
+    <div class="n">Pregunta 14 · Demostrar apropiación con evidencias robustas</div>
+    <div class="row x"><span class="tag">Marcaste</span><div><mark>Mentoría entre pares</mark> con observaciones recíprocas y diarios reflexivos.</div></div>
+    <div class="row v"><span class="tag">Clave</span><div>Ciclo de evaluación con <mark class="g">rúbricas marco, muestras estudiantiles, compromisos y verificación en actas</mark>.</div></div>
+  </div>
+  <div class="par">
+    <div class="n">Pregunta 23 · Impacto y escalabilidad en ocho semanas</div>
+    <div class="row x"><span class="tag">Marcaste</span><div><mark>Comunidad de práctica</mark> con reuniones mensuales y lectura de investigaciones.</div></div>
+    <div class="row v"><span class="tag">Clave</span><div>Piloto con metas, acompañamiento semanal y <mark class="g">evidencia comparativa</mark>.</div></div>
+  </div>
+  <div class="par">
+    <div class="n">Pregunta 34 · Consistencia en la implementación de ajustes</div>
+    <div class="row x"><span class="tag">Marcaste</span><div>Otra vez <mark>mentoría entre docentes</mark>, con diarios y reuniones quincenales.</div></div>
+    <div class="row v"><span class="tag">Clave</span><div>Protocolo con <mark class="g">análisis de evidencias, acuerdos de mejora y seguimiento trimestral</mark>.</div></div>
+  </div>
+  <div class="par">
+    <div class="n">Pregunta 46 · Apropiación operativa de lineamientos</div>
+    <div class="row x"><span class="tag">Marcaste</span><div><mark>Talleres institucionales</mark> con ejemplos por área.</div></div>
+    <div class="row v"><span class="tag">Clave</span><div>Guía operativa con <mark class="g">casos simulados, criterios de evidencia, roles y ruta de seguimiento</mark>.</div></div>
+  </div>
+  <div class="par">
+    <div class="n">Pregunta 10 · Apropiación sostenible de referentes MEN</div>
+    <div class="row x"><span class="tag">Marcaste</span><div><mark>Encuesta diagnóstica</mark> e informe al Consejo Académico.</div></div>
+    <div class="row v"><span class="tag">Clave</span><div>Portafolio con <mark class="g">mapas de progresión, ejemplos de desempeño y sesiones guiadas</mark>.</div></div>
+  </div>
+
+  <p style="font-size:.9rem;color:var(--gray)">Los otros tres errores (4, 5 y 26) sí son el sesgo antiguo: informe técnico, revisión documental y boletín. El reflejo viejo no desapareció; ahora convive con el nuevo.</p>
+
+  <div class="rule">
+    <div class="q">La regla que reemplaza a las anteriores</div>
+    <p>Gana la opción que combina <b>acción pedagógica con evidencia verificable</b>. Pierde la puramente documental (informe, matriz, auditoría) <em>y también</em> la puramente formativa (taller, mentoría, comunidad de práctica). La clave casi siempre nombra las dos cosas en la misma frase: qué se hace en el aula <em>y</em> qué queda registrado.</p>
+  </div>
+
+  <div class="card">
+    <h3>Las cuatro palabras de la Guía 31</h3>
+    <p>Este simulacro cita la Guía 31 en casi todas sus justificaciones, siempre con la misma fórmula: la evaluación directiva es un proceso <b>continuo</b>, <b>sistemático</b>, <b>basado en evidencias</b> y con <b>seguimiento a compromisos</b>.</p>
+    <p>Úsalas como lista de chequeo. Recorre las tres opciones y cuenta cuántas de las cuatro cumple cada una. La clave suele cumplir tres o cuatro; los distractores, una o dos. Es el filtro más rápido que tienes para este tipo de prueba.</p>
+  </div>
+
+  <div class="card">
+    <h3>Una lección que no es sobre el sesgo</h3>
+    <p>En la <b>pregunta 18</b> el material marca B como correcta, pero su propia justificación argumenta a favor de A y descarta B por «alcance institucional y curricular parcial». Y B propone un club extracurricular de voluntarios, que no puede ser la acción que articula áreas y niveles.</p>
+    <p>Marcaste A. Tenías razón. Es la segunda clave mal puesta que aparece —la primera fue la pregunta 20 del Super Simulacro #12—. <b>Cuando la justificación contradice la clave, gana la justificación.</b> No ajustes tu criterio a un error de edición: revísalo, y si la lógica te da, anótalo como acierto.</p>
+  </div>
+</section>
+
 <section>
   <h2>Vocabulario que decide</h2>
   <p class="sub">Aprende a leer la primera cláusula de cada opción. Ahí está casi toda la información.</p>
@@ -503,7 +601,12 @@ table{width:100%;border-collapse:collapse;font-size:.88rem}
         <li>difundir, mensajería, circular, publicar</li>
         <li>delegar en voceros o representantes</li>
         <li>reuniones individuales con cada docente</li>
+        <li>mentoría entre pares, diarios reflexivos</li>
+        <li>comunidad de práctica, cadencia mensual</li>
+        <li>taller, seminario, lecturas guiadas</li>
+        <li>repositorio, banco de recursos</li>
       </ul>
+      <p style="font-size:.8rem;color:var(--gray);margin-top:8px">Las cuatro últimas entraron en la V3: son distractores <em>simpáticos</em>, pedagógicamente correctos, que pierden por no dejar evidencia comparable.</p>
     </div>
     <div class="k">
       <h4>Casi siempre clave</h4>
@@ -523,6 +626,10 @@ table{width:100%;border-collapse:collapse;font-size:.88rem}
         <li>modelar, demostrar la aplicación en la práctica</li>
         <li>transferencia al aula, impacto verificable</li>
         <li>análisis de causas raíz</li>
+        <li>evidencia comparable, triangulada</li>
+        <li>rúbrica marco, descriptores comunes</li>
+        <li>seguimiento a compromisos, trazabilidad</li>
+        <li>piloto con metas y ajuste por periodo</li>
       </ul>
     </div>
   </div>
@@ -644,6 +751,24 @@ table{width:100%;border-collapse:collapse;font-size:.88rem}
     <div class="opt" data-k="C">C. Revisar al mes las planeaciones de aula para retroalimentar los desvíos frente a la estrategia.</div>
     <div class="expl"><b>B.</b> A repite lo que ya falló, con un acuse encima. C es control posterior, y el verbo del aspecto es <em>comunicar con antelación</em>, no verificar. Dos reglas nuevas aplicadas en una sola pregunta.</div>
   </div>
+
+  <h3 style="margin-top:26px">Dos de la V3, sobre la sobrecorrección</h3>
+
+  <div class="drill" data-ok="B">
+    <div class="pregunta">Se acordaron ajustes de aula hace dos meses. La implementación es desigual y el rector pide evidencias comparables del avance por área. ¿Qué corresponde?</div>
+    <div class="opt" data-k="A">A. Programa de mentoría entre pares con observaciones recíprocas, diarios reflexivos y socialización de experiencias.</div>
+    <div class="opt" data-k="B">B. Ciclo de seguimiento con rúbrica común, muestras de trabajos, retroalimentación registrada y compromisos por periodo.</div>
+    <div class="opt" data-k="C">C. Informe consolidado de cumplimiento por docente, con anexos de planeación y porcentajes de avance.</div>
+    <div class="expl"><b>B.</b> Es la única que combina acción pedagógica con evidencia comparable. A es pedagógica pero sin trazabilidad homogénea (el error nuevo). C tiene registro pero no toca la práctica (el error viejo). La clave siempre está en el medio.</div>
+  </div>
+
+  <div class="drill" data-ok="C">
+    <div class="pregunta">El plan de mejoramiento exige resultados medibles en ocho semanas sobre una competencia priorizada. ¿Qué estrategia eliges?</div>
+    <div class="opt" data-k="A">A. Comunidad de práctica docente con encuentros mensuales para intercambiar estrategias y leer investigación.</div>
+    <div class="opt" data-k="B">B. Tablero de indicadores con reportes por área, alertas tempranas y comunicación directiva semanal.</div>
+    <div class="opt" data-k="C">C. Piloto con metas de aprendizaje, acompañamiento semanal, evidencia comparativa y ajuste al cierre del periodo.</div>
+    <div class="expl"><b>C.</b> El plazo de ocho semanas descarta A por cadencia: mensual no alcanza. B monitorea pero no interviene. Cuando el enunciado fija un plazo corto, léelo como un filtro, no como decoración.</div>
+  </div>
 </section>
 
 <section>
@@ -654,7 +779,8 @@ table{width:100%;border-collapse:collapse;font-size:.88rem}
     <p><b>2.</b> Cuando el acierto en esa sección pase del 80 %, activa la casilla de barajar A, B y C. Si el acierto se mantiene, aprendiste el criterio; si cae, estabas recordando posiciones.</p>
     <p><b>3.</b> Solo entonces vuelve al banco completo en modo simulacro con cronómetro.</p>
     <p><b>4.</b> Nuevo: en el banco de errores, filtra por <b>«Errores Simulacro 46»</b> y trabaja primero las tres de comunidad institucional. Es tu punto ciego más caro y el más fácil de corregir, porque tiene una sola regla.</p>
-    <p style="margin-bottom:0">Antes de marcar cualquier opción, hazte las dos preguntas nuevas: <b>¿cuál es el verbo del aspecto evaluado?</b> y <b>¿qué declaró fallido el contexto?</b> Con esas dos habrías salvado 5 de las 10 falladas.</p>
+    <p><b>5.</b> Desde la V3, antes de marcar recorre las tres opciones con las cuatro palabras de la Guía 31 (continuo, sistemático, basado en evidencias, con seguimiento). Cuenta cuántas cumple cada una.</p>
+    <p style="margin-bottom:0">Y guarda cada simulacro nuevo. Este documento existe para ser contradicho: la V3 corrigió a la V2, y la V4 probablemente corrija a la V3. Eso es lo que se busca.</p>
   </div>
 </section>
 </div>
@@ -694,6 +820,30 @@ table{width:100%;border-collapse:collapse;font-size:.88rem}
   <h2>Desempeño por sub-eje</h2>
   <p class="sub">Acumulado de los intentos que registran detalle. Rojo bajo 60 %, verde sobre 85 %.</p>
   <div class="card" id="ejes"></div>
+</section>
+
+<section>
+  <h2>Evolución del patrón</h2>
+  <p class="sub">Qué tipo de error dominó en cada intento. Es el dato que la nota de puntaje no muestra.</p>
+  <div class="card" style="padding:0;overflow:hidden">
+    <table>
+      <thead><tr><th style="width:82px">Intento</th><th>Sesgo dominante</th><th style="width:96px;text-align:right">Evidencia</th></tr></thead>
+      <tbody>
+        <tr><td><b>V1</b><span class="mini">agosto</span></td>
+          <td>Elegir el <b>medio organizativo</b> sobre el criterio técnico<span class="mini">Reuniones y comités donde se pedían matrices e indicadores</span></td>
+          <td class="n">18/18<span class="mini">sección 41–72</span></td></tr>
+        <tr><td><b>V2</b><span class="mini">28 ago</span></td>
+          <td>Medir <b>cumplimiento</b> en vez de impacto · informar en vez de <b>abrir retorno</b><span class="mini">Auditar, difundir, contar asistencia</span></td>
+          <td class="n">9/10<span class="mini">falladas</span></td></tr>
+        <tr><td><b>V3</b><span class="mini">9 sep</span></td>
+          <td>Invertido: elegir lo <b>colegial y formativo</b> sobre lo que deja evidencia verificable<span class="mini">Mentoría, comunidad de práctica, taller</span></td>
+          <td class="n">5/8<span class="mini">falladas reales</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="card" style="border-left:4px solid var(--orange)">
+    <p style="margin:0;font-size:.92rem"><b>Regla vigente.</b> Gana la opción que combina <b>acción pedagógica con evidencia verificable</b>. Pierde la puramente documental y también la puramente formativa. El detalle completo está en la pestaña <b>El reflejo del docente</b>, versión 3.</p>
+  </div>
 </section>
 
 <section>
@@ -919,6 +1069,25 @@ const INTENTOS = [
       "Comunidad – interacción con el entorno": [5,5],
       "Académica – pedagogía y didáctica": [4,5],
       "Académica – innovación y direccionamiento": [5,5]
+    }
+  }
+  ,{
+    fecha: "2026-09-08",
+    nombre: "Evaluación y Gestión Pedagógica · 46 casos",
+    ok: 37, total: 46,
+    nota: "Nueve falladas según la app. La P18 tiene la clave mal puesta (el material marca B pero su justificación defiende A): con esa corrección el resultado real es 38/46. El sesgo se invirtió: ahora se elige lo colegial-formativo sobre lo que deja evidencia verificable.",
+    ejes: {
+      "Acompañamiento y retroalimentación pedagógica": [3,4],
+      "Evaluación permanente de planes y métodos": [3,4],
+      "Referentes curriculares MEN": [6,8],
+      "Proyectos pedagógicos articuladores": [3,4],
+      "Innovación e investigación pedagógica": [3,4],
+      "Análisis y apropiación de resultados": [3,4],
+      "Cambios curriculares ante consejo académico": [4,4],
+      "Seguimiento a ajustes de aula": [3,4],
+      "Casos académicos y disciplinares": [4,4],
+      "Retención y promoción": [3,3],
+      "Comisiones de evaluación y promoción": [2,3]
     }
   }
 ];
