@@ -26,11 +26,11 @@ body{font-family:Arial,Helvetica,sans-serif;background:var(--bg);color:#1c2233;l
 .wrap{max-width:900px;margin:0 auto;padding:0 16px}
 
 /* ── barra superior y pestañas ── */
-.top{background:linear-gradient(135deg,var(--navy),var(--navy-l));color:#fff;
+.sitehead{background:linear-gradient(135deg,var(--navy),var(--navy-l));color:#fff;
   padding:calc(26px + env(safe-area-inset-top)) 0 0;position:sticky;top:0;z-index:30;
   box-shadow:0 2px 12px rgba(31,42,110,.22)}
-.top .eyebrow{font-size:.66rem;letter-spacing:2.2px;text-transform:uppercase;opacity:.78;margin-bottom:6px}
-.top h1{font-size:1.32rem;line-height:1.25;margin-bottom:16px}
+.sitehead .eyebrow{font-size:.66rem;letter-spacing:2.2px;text-transform:uppercase;opacity:.78;margin-bottom:6px}
+.sitehead h1{font-size:1.32rem;line-height:1.25;margin-bottom:16px}
 .tabs{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none}
 .tabs::-webkit-scrollbar{display:none}
 .tab{flex:0 0 auto;border:0;background:transparent;color:rgba(255,255,255,.72);
@@ -59,7 +59,7 @@ body{font-family:Arial,Helvetica,sans-serif;background:var(--bg);color:#1c2233;l
 
 footer{text-align:center;color:var(--gray);font-size:.78rem;
   padding:38px 16px calc(30px + env(safe-area-inset-bottom));line-height:1.7}
-@media(max-width:640px){.top h1{font-size:1.1rem}.hero{padding:20px 18px}.hero h1{font-size:1.2rem}}
+@media(max-width:640px){.sitehead h1{font-size:1.1rem}.hero{padding:20px 18px}.hero h1{font-size:1.2rem}}
 @media(prefers-reduced-motion:reduce){
   *,*::before,*::after{animation-duration:.001ms!important;transition-duration:.001ms!important}
   .panel.on{animation:none}
@@ -309,7 +309,7 @@ table{width:100%;border-collapse:collapse;font-size:.88rem}
 </head>
 <body>
 
-<div class="top"><div class="wrap">
+<div class="sitehead"><div class="wrap">
   <div class="eyebrow">Concurso de ingreso · Directivo docente</div>
   <h1>Preparación para Coordinación</h1>
   <nav class="tabs" role="tablist">
@@ -375,7 +375,7 @@ table{width:100%;border-collapse:collapse;font-size:.88rem}
 
 <section>
   <h2>Línea de tiempo del reflejo</h2>
-  <p class="sub">Las tres lecturas, en orden. Cada una nació de un simulacro distinto.</p>
+  <p class="sub">Las cuatro lecturas, en orden. Cada una nació de un simulacro distinto.</p>
   <div class="card">
     <table class="linea">
       <tr><th>Versión</th><th>Instrumento</th><th>Qué dijo</th></tr>
@@ -388,8 +388,11 @@ table{width:100%;border-collapse:collapse;font-size:.88rem}
       <tr><td class="v">V3<br><span style="font-weight:normal;color:var(--gray);font-size:.78rem">9 sep</span></td>
         <td>Evaluación y Gestión Pedagógica<br><b>37/46</b> · 38 corregido</td>
         <td><b>El sesgo se invierte.</b> Ahora eliges lo colegial y formativo sobre lo que deja evidencia verificable. Aparece la regla que unifica las tres.</td></tr>
+      <tr><td class="v">V4<br><span style="font-weight:normal;color:var(--gray);font-size:.78rem">14 oct</span></td>
+        <td>Súper Simulacro 13<br><b>76/140</b> · clave oficial</td>
+        <td><b>La inversión de la V3 no existía.</b> Sobre 140 preguntas y 64 errores reaparece el patrón de la V1, ahora medible: eliges el verbo que <b>organiza</b> sobre el que <b>integra</b>.</td></tr>
     </table>
-    <p style="font-size:.88rem;color:var(--gray);margin:14px 0 0">Si vas con prisa, lee la <b>Versión 3</b>: contiene la regla que reemplaza a las anteriores. Si quieres entender por qué llegaste ahí, léelas en orden.</p>
+    <p style="font-size:.88rem;color:var(--gray);margin:14px 0 0">Si vas con prisa, lee la <b>Versión 4</b>: es la primera medida sobre la prueba completa y con clave oficial, y corrige lo que decían las anteriores. Si quieres entender el recorrido, léelas en orden.</p>
   </div>
 </section>
 
@@ -520,7 +523,7 @@ table{width:100%;border-collapse:collapse;font-size:.88rem}
   </div>
 </section>
 
-<div class="vbar v3"><b>Versión 3 · Evaluación y Gestión Pedagógica</b><span class="fecha">9 de septiembre de 2026 · 37/46 (38 corregido)</span><span class="estado viva">lectura vigente</span></div>
+<div class="vbar v3"><b>Versión 3 · Evaluación y Gestión Pedagógica</b><span class="fecha">9 de septiembre de 2026 · 37/46 (38 corregido)</span><span class="estado matiz">corregida por la V4</span></div>
 
 <section>
   <h2>El reflejo se dio la vuelta</h2>
@@ -648,6 +651,67 @@ table{width:100%;border-collapse:collapse;font-size:.88rem}
       <small>Nivel de sostenibilidad. Aquí <b>sí gana la opción sistémica</b>: cultura institucional de seguimiento, gobernanza participativa, arquitectura operativa, sistema institucional de información.</small></div></div>
     <p style="margin-top:16px">Este tercer escalón te costó cuatro preguntas seguidas: 56, 64, 68 y 72. En las cuatro marcaste el dispositivo concreto —informe, red de líderes, tablero, comité— cuando el enunciado pedía explícitamente <em>sostener durante todo el ciclo</em>. Cuando leas «nivel más complejo» o «sostener durante todo el año», busca la opción que institucionaliza un sistema, no la que crea un artefacto.</p>
   </div>
+</section>
+
+<section>
+<div class="vbar v3"><b>Versión 4 · Súper Simulacro 13</b><span class="fecha">14 de octubre de 2026 · 76/140 · clave oficial</span><span class="estado viva">lectura vigente</span></div>
+
+<div class="card">
+  <h3>Lo primero: la V3 estaba mal</h3>
+  <p>La Versión 3 decía que el sesgo se había invertido, que ahora elegías lo colegial y formativo sobre lo que deja evidencia. Esa lectura salió de <b>8 errores en un simulacro de 46 preguntas</b>. Sobre 140 preguntas con clave oficial y 64 errores, no aparece.</p>
+  <p>Lo que aparece es el patrón de la Versión 1, intacto. No hubo inversión ni sobrecorrección: hubo una muestra demasiado pequeña para distinguir una señal del ruido. Conviene que lo sepas, porque estuviste estudiando varias semanas contra un diagnóstico que no se sostenía.</p>
+</div>
+
+<div class="card">
+  <h3>El resultado está parejo, y eso también dice algo</h3>
+  <table>
+    <tr><th>Eje</th><th>Aciertos</th><th></th></tr>
+    <tr><td>Prueba psicotécnica</td><td><b>16/26</b></td><td>62%</td></tr>
+    <tr><td>Lectura crítica</td><td><b>7/12</b></td><td>58%</td></tr>
+    <tr><td>Gestión directiva</td><td><b>13/24</b></td><td>54%</td></tr>
+    <tr><td>Gestión académica</td><td><b>13/24</b></td><td>54%</td></tr>
+    <tr><td>Conocimientos específicos</td><td><b>21/42</b></td><td>50%</td></tr>
+    <tr><td>Razonamiento cuantitativo</td><td><b>6/12</b></td><td>50%</td></tr>
+  </table>
+  <p style="margin-top:12px">Doce puntos separan el mejor eje del peor. No hay un área débil que rescatar: el problema es transversal y está en <b>cómo eliges entre tres opciones plausibles</b>, no en qué temas te faltan.</p>
+</div>
+
+<div class="card">
+  <h3>El hallazgo: el verbo con el que abre la opción</h3>
+  <p>Al clasificar las 420 opciones del simulacro según el verbo que las abre, aparece algo que el autor construyó deliberadamente:</p>
+  <table>
+    <tr><th>La opción abre con…</th><th>Si es la clave</th><th>Si es distractor</th><th>Lo que elegiste al fallar</th></tr>
+    <tr><td><b>Verbo integrador</b><br><span style="font-size:.82rem;color:var(--gray)">integrar, articular, contrastar, relacionar, verificar, cruzar, comparar</span></td><td><b>41%</b></td><td>12%</td><td>17%</td></tr>
+    <tr><td><b>Verbo organizador</b><br><span style="font-size:.82rem;color:var(--gray)">organizar, distribuir, registrar, formalizar, solicitar, presentar, diseñar</span></td><td>17%</td><td><b>50%</b></td><td><b>55%</b></td></tr>
+  </table>
+  <p style="margin-top:12px">Una opción que abre integrando tiene <b>más del triple</b> de probabilidad de ser la clave que de ser distractor. Una que abre organizando, al revés. Y tus fallos siguen casi exactamente la composición del montón de distractores: <b>no estás usando esta señal en absoluto</b>.</p>
+  <p>En <b>42% de tus 64 errores</b> elegiste una opción que organiza, distribuye o registra, cuando la clave no era de ese tipo.</p>
+</div>
+
+<div class="card" style="border-left:5px solid var(--ok)">
+  <h3>La regla, con su precio medido</h3>
+  <p><b>Cuando entre las tres opciones haya exactamente una que abra con un verbo integrador, márcala.</b></p>
+  <table>
+    <tr><td>Preguntas donde la regla aplica</td><td><b>40 de 140</b></td></tr>
+    <tr><td>Veces que acierta</td><td><b>34 de 40 · 85%</b></td></tr>
+    <tr><td>Falladas que habría salvado</td><td><b>20 de 64</b></td></tr>
+    <tr><td>Puntaje con la regla aplicada</td><td><b>96/140 · 69%</b></td></tr>
+  </table>
+  <p style="margin-top:12px">Quince puntos porcentuales por una sola heurística, aplicable en poco menos de un tercio de la prueba. No resuelve todo, pero es lo más barato que tienes disponible de aquí al examen.</p>
+</div>
+
+<div class="card">
+  <h3>Dos cosas que NO funcionan, para que no pierdas tiempo</h3>
+  <p><b>Elegir la opción más larga.</b> En tus 64 errores la clave era más larga que lo que marcaste en solo 22 casos. Es decir: la correcta suele ser <i>más corta</i>. Si has estado usando la longitud como pista, deja de hacerlo.</p>
+  <p style="margin-bottom:0"><b>Guiarte por el tipo de distractor.</b> El cuadernillo clasifica cada opción incorrecta en tres categorías, y el 61% de tus errores cayó en «insuficiencia técnica». Suena revelador, pero esa categoría ya es el 55% de los distractores disponibles: tu sesgo real es de apenas <b>+6 puntos</b> sobre el azar. La categoría describe bien el error, pero no sirve para anticiparlo.</p>
+</div>
+
+<div class="card">
+  <h3>Qué hacer en las tres semanas que vienen</h3>
+  <p><b>1. Repasa tus 64 falladas con el botón del simulacro.</b> Están cargadas con lo que marcaste al lado de la clave. En cada una, antes de leer la justificación, pregúntate cuál opción integra y cuál solo organiza.</p>
+  <p><b>2. Entrena el gesto, no el contenido.</b> Lee primero los tres verbos iniciales, antes que el resto de la opción. Decide con eso y después comprueba si el cuerpo de la opción lo confirma.</p>
+  <p style="margin-bottom:0"><b>3. Mide otra vez con 140 preguntas.</b> Los simulacros de 46 no distinguen señal de ruido: eso es exactamente lo que produjo el falso diagnóstico de la V3. Para saber si esto se movió, hace falta otra prueba completa.</p>
+</div>
 </section>
 
 <section>
@@ -925,6 +989,15 @@ table{width:100%;border-collapse:collapse;font-size:.88rem}
    ══════════════════════════════════════════════════════════════ */
 const RECURSOS = [
   {
+    titulo: "Súper Simulacro 13 · 140 preguntas",
+    archivo: "simulacro_13_coordinador.html",
+    resumen: "La prueba completa, reconstruida desde el cuadernillo original: 41 situaciones con su eje, su sub-eje y la competencia evaluada. Trae la clave oficial, la justificación del autor con sus citas a la Guía 31 y al Manual de Funciones, y la tipificación de cada distractor. Se puede practicar por ejes y en varias sentadas.",
+    categoria: "Simulacros",
+    icono: "🧭",
+    meta: ["140 preguntas", "41 situaciones", "clave oficial"],
+    nuevo: true
+  },
+  {
     titulo: "Simulacro completo · 140 preguntas",
     archivo: "simulacro_140_coordinador.html",
     resumen: "Banco original con las seis secciones de la prueba real: gestión académica, gestión institucional, lectura crítica, razonamiento cuantitativo, psicotécnica y conocimientos específicos.",
@@ -934,12 +1007,12 @@ const RECURSOS = [
     nuevo: true
   },
   {
-    titulo: "Banco de errores · 58 preguntas",
+    titulo: "Banco de errores · 131 preguntas",
     archivo: "simulador_prueba_directivo.html",
-    resumen: "Las 48 preguntas falladas en el Super Simulacro 12 más las 10 del simulacro de 46 casos, con clave contrastada y justificación de cada respuesta.",
+    resumen: "Todo lo que has fallado, reunido: 48 del Super Simulacro 12, 10 del simulacro de 46 casos, 9 de Evaluación y Gestión Pedagógica y las 64 del Súper Simulacro 13, estas últimas con la justificación oficial del cuadernillo y la tipificación del distractor que elegiste. Filtrable por simulacro de origen y por eje.",
     categoria: "Simulacros",
     icono: "🎯",
-    meta: ["58 preguntas", "clave verificada"],
+    meta: ["131 preguntas", "clave verificada", "filtra por eje"],
     nuevo: true
   },
   {
@@ -1090,6 +1163,20 @@ const INTENTOS = [
       "Comisiones de evaluación y promoción": [2,3]
     }
   }
+  ,{
+    fecha: "2026-10-14",
+    nombre: "Súper Simulacro 13 · 140 preguntas",
+    ok: 76, total: 140,
+    nota: "Primera medición con clave oficial y sobre las 140 preguntas reales. El resultado está parejo en los seis ejes (50–62%), sin un área que destaque. De las 64 falladas, en 42% se eligió una opción que organiza, distribuye o registra cuando la clave no lo era. Aplicando solo la regla del verbo integrador, el puntaje habría sido 96/140.",
+    ejes: {
+      "Gestión directiva": [13,24],
+      "Gestión académica": [13,24],
+      "Conocimientos específicos del coordinador": [21,42],
+      "Lectura crítica": [7,12],
+      "Razonamiento cuantitativo": [6,12],
+      "Prueba psicotécnica": [16,26]
+    }
+  }
 ];
 /* ══════════════ fin de la lista editable ══════════════ */
 
@@ -1155,7 +1242,7 @@ function pintarChart(L){
     return;
   }
   var W = Math.max(560, L.length * 130), H = 260,
-      ml = 44, mr = 18, mt = 22, mb = 52;
+      ml = 50, mr = 26, mt = 22, mb = 52;
   var iw = W - ml - mr, ih = H - mt - mb;
   var X = function(i){ return ml + (L.length === 1 ? iw/2 : i * iw / (L.length - 1)); };
   var Y = function(p){ return mt + ih - (p / 100) * ih; };
@@ -1174,10 +1261,14 @@ function pintarChart(L){
   s += '<polyline class="line" style="--len:' + Math.ceil(len) + '" points="' + pts + '"/>';
   L.forEach(function(d,i){
     var x = X(i), y = Y(d.pct);
+    // Las etiquetas de los extremos se anclan hacia adentro para que no se
+    // salgan del lienzo ni choquen con los rótulos del eje vertical.
+    var anc = i === 0 ? 'start' : (i === L.length-1 ? 'end' : 'middle');
+    var tx  = i === 0 ? x + 9  : (i === L.length-1 ? x - 9  : x);
     s += '<circle class="dot" cx="' + x + '" cy="' + y + '" r="6" style="animation-delay:' + (0.9 + i*0.12) + 's"/>'
-       + '<text class="gt b" x="' + x + '" y="' + (y-14) + '" text-anchor="middle">' + d.pct + '%</text>'
-       + '<text class="gt" x="' + x + '" y="' + (H-30) + '" text-anchor="middle">' + esc(d.ok + '/' + d.total) + '</text>'
-       + '<text class="gt" x="' + x + '" y="' + (H-14) + '" text-anchor="middle">' + esc(d.fecha ? fechaLarga(d.fecha) : 'previo') + '</text>';
+       + '<text class="gt b" x="' + tx + '" y="' + (y-14) + '" text-anchor="' + anc + '">' + d.pct + '%</text>'
+       + '<text class="gt" x="' + tx + '" y="' + (H-30) + '" text-anchor="' + anc + '">' + esc(d.ok + '/' + d.total) + '</text>'
+       + '<text class="gt" x="' + tx + '" y="' + (H-14) + '" text-anchor="' + anc + '">' + esc(d.fecha ? fechaLarga(d.fecha) : 'previo') + '</text>';
   });
   s += '</svg>';
   box.innerHTML = s;

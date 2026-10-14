@@ -181,6 +181,13 @@ td.num{text-align:right;white-space:nowrap;font-weight:bold;}
 .hint{font-size:13px;color:var(--muted);margin-top:10px;}
 .foot{text-align:center;font-size:12px;color:var(--muted);margin-top:28px;}
 .hidden{display:none !important;}
+.reanudar{border-left:5px solid var(--ok);background:var(--ok-bg);border:1px solid #B7E1C6;
+  border-left-width:5px;border-radius:0 12px 12px 0;padding:14px 16px;margin-top:16px;font-size:14.5px;}
+.reanudar b{color:var(--ok);}
+.reanudar .btnrow{margin-top:12px;}
+.reanudar .btn{padding:10px 18px;font-size:14px;}
+.guardado{font-size:12px;color:var(--muted);align-self:center;margin-left:auto;opacity:0;transition:opacity 300ms ease;}
+.guardado.on{opacity:1;}
 
 @media (max-width:600px){
   h1{font-size:22px;}
@@ -218,6 +225,8 @@ td.num{text-align:right;white-space:nowrap;font-weight:bold;}
         <span class="tag">Administrativa y financiera</span>
         <span class="tag">Gestión de la comunidad</span>
       </div>
+      <div id="reanudar"></div>
+
       <h3 style="margin-top:18px">Elige cómo practicar</h3>
       <p class="lead">En <b>práctica guiada</b> ves la justificación después de cada respuesta. En <b>simulacro</b> respondes las 46 seguidas y revisas todo al final.</p>
       <div class="btnrow">
@@ -246,6 +255,7 @@ td.num{text-align:right;white-space:nowrap;font-weight:bold;}
       <div class="btnrow">
         <button class="btn ghost" id="btnPrev" onclick="ir(-1)">Anterior</button>
         <button class="btn" id="btnNext" onclick="ir(1)">Siguiente</button>
+        <span class="guardado" id="guardado">avance guardado</span>
       </div>
     </div>
   </section>
@@ -603,7 +613,83 @@ const SITUACIONES = [
 
 /* ====================== ESTADO ====================== */
 const LETRAS=["A","B","C"];
-let PLANO=[], idx=0, modo="guiada", respuestas=[], sitAbierta=true, sitPrevia=null;
+let PLANO=[], idx=0, modo="guiada", respuestas=[], sitAbierta=true, sitPrevia=null, ultimaQ=-1;
+
+/* ====================== GUARDADO DE SESIÓN ======================
+   El avance se guarda solo después de cada respuesta, en este navegador,
+   para poder hacer el simulacro en varias sentadas. Se borra al calificar. */
+const CLAVE_SESION = 'sim46_sesion_v1';
+const TODAS = (function(){ const o={}; SITUACIONES.forEach(function(s){
+  s.preguntas.forEach(function(q){ o[q.n]={...q, sit:s}; }); }); return o; })();
+
+function guardar(){
+  try{
+    localStorage.setItem(CLAVE_SESION, JSON.stringify({
+      v:1, modo:modo, idx:idx, respuestas:respuestas,
+      nums:PLANO.map(function(q){return q.n;}), ts:Date.now()
+    }));
+    const g=document.getElementById('guardado');
+    if(g){ g.classList.add('on'); clearTimeout(window._gt); window._gt=setTimeout(function(){g.classList.remove('on');},1400); }
+  }catch(e){}
+}
+function leerSesion(){
+  try{
+    const s=JSON.parse(localStorage.getItem(CLAVE_SESION)||'null');
+    if(!s || s.v!==1 || !Array.isArray(s.respuestas) || !Array.isArray(s.nums)) return null;
+    if(!s.respuestas.some(function(x){return x!==null;})) return null;
+    return s;
+  }catch(e){ return null; }
+}
+function borrarSesion(){ try{ localStorage.removeItem(CLAVE_SESION); }catch(e){} }
+
+function fechaCorta(ts){
+  try{
+    const d=new Date(ts), hoy=new Date();
+    const hora=d.toLocaleTimeString('es-CO',{hour:'2-digit',minute:'2-digit',hour12:false});
+    if(d.toDateString()===hoy.toDateString()) return 'hoy a las '+hora;
+    const M=['ene','feb','mar','abr','may','jun','jul','ago','sep','oct','nov','dic'];
+    return 'el '+d.getDate()+' de '+M[d.getMonth()]+' a las '+hora;
+  }catch(e){ return 'antes'; }
+}
+
+function pintarReanudar(){
+  const caja=document.getElementById('reanudar');
+  if(!caja) return;
+  const s=leerSesion();
+  if(!s){ caja.innerHTML=''; return; }
+  const hechas=s.respuestas.filter(function(x){return x!==null;}).length;
+  caja.innerHTML='<div class="reanudar"><b>Tienes un intento a medias.</b> '+
+    'Llevabas <b>'+hechas+' de '+s.respuestas.length+'</b> preguntas en modo '+
+    (s.modo==='guiada'?'práctica guiada':'simulacro')+', guardado '+fechaCorta(s.ts)+'. '+
+    'Puedes seguir donde quedaste.'+
+    '<div class="btnrow">'+
+    '<button class="btn" type="button" onclick="reanudar()">Continuar</button>'+
+    '<button class="btn ghost" type="button" onclick="descartar()">Descartar y empezar de nuevo</button>'+
+    '</div></div>';
+}
+function descartar(){
+  if(!confirm('Se borra el avance guardado y empiezas desde cero. ¿Seguro?')) return;
+  borrarSesion(); pintarReanudar();
+}
+function reanudar(){
+  const s=leerSesion();
+  if(!s){ pintarReanudar(); return; }
+  // Se reconstruye la lista desde los números guardados: así también se
+  // puede retomar un repaso de solo las falladas, no únicamente el recorrido completo.
+  if(s.nums.some(function(n){ return !TODAS[n]; })){
+    alert('El simulacro cambió desde tu última sentada, así que el avance guardado ya no corresponde. Hay que empezar de nuevo.');
+    borrarSesion(); pintarReanudar(); return;
+  }
+  modo=s.modo;
+  PLANO=s.nums.map(function(n){ return TODAS[n]; });
+  respuestas=s.respuestas.slice();
+  idx=Math.min(Math.max(s.idx,0), PLANO.length-1);
+  sitPrevia=null; sitAbierta=true; ultimaQ=-1;
+  document.getElementById('start').classList.add('hidden');
+  document.getElementById('results').classList.add('hidden');
+  document.getElementById('quiz').classList.remove('hidden');
+  pintar();
+}
 
 function aplanar(lista){
   const out=[];
@@ -612,10 +698,13 @@ function aplanar(lista){
 }
 
 function iniciar(m){
+  // Si hay un intento guardado, empezar de cero lo descarta: hay que avisar.
+  if(leerSesion() && !confirm('Tienes un intento a medias guardado. Si empiezas de nuevo se borra. ¿Continuar de todos modos?')) return;
   modo=m;
   PLANO=aplanar(SITUACIONES);
   respuestas=new Array(PLANO.length).fill(null);
-  idx=0; sitPrevia=null; sitAbierta=true;
+  idx=0; sitPrevia=null; sitAbierta=true; ultimaQ=-1;
+  borrarSesion();
   document.getElementById('start').classList.add('hidden');
   document.getElementById('results').classList.add('hidden');
   document.getElementById('quiz').classList.remove('hidden');
@@ -627,11 +716,11 @@ function repetirFalladas(){
   if(!malas.length){ alert("No hay preguntas falladas. Buen trabajo."); return; }
   PLANO = malas;
   respuestas = new Array(PLANO.length).fill(null);
-  idx=0; sitPrevia=null; sitAbierta=true;
+  idx=0; sitPrevia=null; sitAbierta=true; ultimaQ=-1;
   document.getElementById('results').classList.add('hidden');
   document.getElementById('quiz').classList.remove('hidden');
   window.scrollTo({top:0});
-  pintar();
+  pintar(); guardar();
 }
 
 function toggleSit(){
@@ -651,8 +740,11 @@ function pintar(){
     '<p>'+q.sit.texto+'</p><p style="margin:0"><span class="tag warm">'+q.sit.subeje+'</span></p>';
   // El caso se abre solo al entrar a una situación nueva y se pliega dentro de la
   // misma: así se lee una vez por situación, no una vez por pregunta.
-  if(q.sit.id !== sitPrevia){ sitAbierta = true; sitPrevia = q.sit.id; }
-  else if(!document.getElementById('sitCard').dataset.tocado){ sitAbierta = false; }
+  if(idx !== ultimaQ){
+    if(q.sit.id !== sitPrevia){ sitAbierta = true; sitPrevia = q.sit.id; document.getElementById('sitCard').dataset.tocado=""; }
+    else if(!document.getElementById('sitCard').dataset.tocado){ sitAbierta = false; }
+    ultimaQ = idx;
+  }
   document.getElementById('sitCard').classList.toggle('closed', !sitAbierta);
   document.getElementById('sitTitle').innerHTML = q.sit.titulo + " · " + q.sit.rango
     + (sitAbierta ? '' : ' <span style="color:var(--orange);font-weight:normal;font-size:12px">· misma situación</span>');
@@ -713,13 +805,14 @@ function responder(i){
   }else{
     pintar();
   }
+  guardar();
 }
 
 function ir(d){
   const nuevo=idx+d;
   if(nuevo<0) return;
   if(nuevo>=PLANO.length){ terminar(); return; }
-  idx=nuevo; pintar();
+  idx=nuevo; pintar(); guardar();
 }
 
 function terminar(){
@@ -769,10 +862,13 @@ function terminar(){
   });
   if(!hubo) w.innerHTML='<p class="lead">Ninguna fallada. Las 46 con clave correcta.</p>';
 
+  borrarSesion();
   document.getElementById('quiz').classList.add('hidden');
   document.getElementById('results').classList.remove('hidden');
   window.scrollTo({top:0, behavior:'smooth'});
 }
+
+pintarReanudar();
 
 document.addEventListener('keydown', e=>{
   if(document.getElementById('quiz').classList.contains('hidden')) return;
