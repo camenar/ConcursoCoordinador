@@ -641,6 +641,26 @@ const SITUACIONES = [
 }
 ];
 
+
+/* ===== BITÁCORA COMPARTIDA =====
+   Los cinco simuladores viven en el mismo origen, así que escriben todos en
+   la misma clave de localStorage y la bitácora del portal los lee de ahí.
+   Se guardan los últimos 60 intentos; si falla, no pasa nada. */
+function registrarIntento(nombre, ok, total, secciones, extra){
+  try{
+    if(!total) return;
+    const k = 'bitacora_intentos';
+    const prev = JSON.parse(localStorage.getItem(k) || '[]');
+    const rec = { id: Date.now(), fecha: new Date().toISOString().slice(0,10),
+                  simulacro: nombre, ok: ok, total: total, secciones: secciones || {} };
+    /* deTotal = tamaño del instrumento completo. Permite distinguir un intento
+       entero de un contrarreloj parcial, que no son comparables entre sí. */
+    if(extra) for(const p in extra) rec[p] = extra[p];
+    prev.push(rec);
+    localStorage.setItem(k, JSON.stringify(prev.slice(-60)));
+  }catch(e){}
+}
+
 /* ====================== ESTADO ====================== */
 const LETRAS=["A","B","C"];
 let PLANO=[], idx=0, modo="guiada", respuestas=[], sitAbierta=true, sitPrevia=null, ultimaQ=-1;
@@ -959,6 +979,10 @@ function terminar(porTiempo){
                  '<td class="num">'+d.ok+'/'+d.tot+'</td>';
     tb.appendChild(tr);
   });
+
+  registrarIntento('Simulacro focalizado · 46', ok, baseIdx.length,
+    Object.keys(porSub).reduce(function(o,s){ o[s]=[porSub[s].ok,porSub[s].tot]; return o; }, {}),
+    { cronometrado: contra, minutos: Math.round(limite/60) || 0, segundos: Math.round(segs), deTotal: PLANO.length });
 
   const w=document.getElementById('rWrong'); w.innerHTML="";
   let hubo=false;

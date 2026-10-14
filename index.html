@@ -222,6 +222,17 @@ footer{text-align:center;color:var(--gray);font-size:.78rem;
 #pBitacora h2{color:var(--navy);font-size:1.18rem;margin-bottom:4px}
 #pBitacora .sub{color:var(--gray);font-size:.88rem;margin-bottom:16px}
 #pBitacora h3{color:var(--navy);font-size:.95rem;margin:20px 0 8px}
+#pBitacora .evofila{display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--line)}
+#pBitacora .evofila:last-child{border-bottom:0}
+#pBitacora .evofila .nom{flex:1 1 180px;font-size:.87rem;line-height:1.3;min-width:0}
+#pBitacora .evofila .spark{flex:0 0 130px;height:34px}
+#pBitacora .evofila .val{flex:0 0 112px;text-align:right;white-space:nowrap}
+#pBitacora .evofila .val b{font-size:1.02rem}
+#pBitacora .evofila .val small{display:block;font-size:.72rem;margin-top:1px}
+#pBitacora .sube{color:var(--ok)} #pBitacora .baja{color:var(--bad)} #pBitacora .igual{color:var(--gray)}
+#pBitacora .autotag{display:inline-block;background:#eef1f9;color:var(--navy);border-radius:99px;
+  padding:1px 7px;font-size:.66rem;font-weight:bold;margin-left:6px;vertical-align:middle}
+@media(max-width:640px){#pBitacora .evofila{flex-wrap:wrap}#pBitacora .evofila .nom{flex:1 1 100%}}
 #pBitacora .card{background:var(--card);border-radius:13px;padding:20px;box-shadow:0 2px 10px rgba(31,42,110,.07);margin-bottom:16px}
 #pBitacora /* KPIs */
 .kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:16px}
@@ -862,7 +873,7 @@ table{width:100%;border-collapse:collapse;font-size:.88rem}
 <div class="hero">
   <div class="eyebrow">Concurso directivo docente · Coordinación</div>
   <h1>Bitácora de simulacros</h1>
-  <p>Cada intento registrado, su desempeño por sub-eje y la tendencia. Sirve para una sola cosa: comprobar si el patrón de error cede.</p>
+  <p>Los simuladores registran solos cada intento al terminar. Aquí quedan la tendencia, el recorrido de cada sección y el detalle. Sirve para una sola cosa: comprobar si el patrón de error cede.</p>
 </div>
 
 
@@ -872,10 +883,17 @@ table{width:100%;border-collapse:collapse;font-size:.88rem}
 
 <section>
   <h2>Tendencia</h2>
-  <p class="sub">Porcentaje de acierto por intento, en orden cronológico.</p>
+  <p class="sub">Porcentaje de acierto por intento completo, en orden cronológico.
+  Los contrarrelojes parciales y los repasos quedan fuera de esta curva porque no son comparables; se ven más abajo.</p>
   <div class="card">
     <div class="chartbox" id="chart"></div>
   </div>
+</section>
+
+<section>
+  <h2>Evolución por sección</h2>
+  <p class="sub">Cómo se mueve cada sección intento a intento. Solo aparecen las que se han medido al menos dos veces.</p>
+  <div class="card" id="evolucion"></div>
 </section>
 
 <section>
@@ -1201,8 +1219,26 @@ function esc(t){ return String(t==null?'':t)
 
 function locales(){ var v = LS.get(KEY); return Array.isArray(v) ? v : []; }
 
+/* Intentos que los simuladores escriben solos al terminar. Viven en el mismo
+   origen, así que basta con leer su clave compartida. */
+function automaticos(){
+  var v = LS.get('bitacora_intentos');
+  if(!Array.isArray(v)) return [];
+  return v.map(function(r){
+    var etiqueta = r.simulacro || 'Simulacro';
+    if(r.repaso) etiqueta += ' · repaso de falladas';
+    else if(r.cronometrado) etiqueta += ' · contrarreloj ' + (r.minutos || '?') + ' min';
+    var completo = !r.repaso && (!r.deTotal || r.total >= r.deTotal);
+    return { fecha: r.fecha, nombre: etiqueta, ok: r.ok, total: r.total,
+             ejes: r.secciones || {}, auto: true, parcial: !completo, deTotal: r.deTotal,
+             nota: r.cronometrado
+               ? ('Contrarreloj de ' + (r.minutos||'?') + ' min. El puntaje va sobre las ' + r.total + ' que alcanzaste, no sobre el total del simulacro.')
+               : '' };
+  });
+}
+
 function todos(){
-  var a = INTENTOS.concat(locales()).map(function(x,i){
+  var a = INTENTOS.concat(locales()).concat(automaticos()).map(function(x,i){
     var o = Object.assign({}, x);
     o.pct = o.total ? Math.round(o.ok / o.total * 1000) / 10 : 0;
     o._i = i;
@@ -1290,6 +1326,8 @@ function pintarTabla(L){
   b.innerHTML = L.slice().reverse().map(function(d){
     return '<tr><td>' + esc(fechaLarga(d.fecha)) + '</td>'
       + '<td><b>' + esc(d.nombre) + '</b>'
+      + (d.parcial ? '<span class="autotag">parcial</span>' : '')
+      + (d.auto && !d.parcial ? '<span class="autotag">automático</span>' : '')
       + (d.nota ? '<span class="mini">' + esc(d.nota) + '</span>' : '')
       + (d.local ? '<span class="mini"><i>solo en este equipo</i></span>' : '') + '</td>'
       + '<td class="n">' + d.ok + '/' + d.total + '</td>'
@@ -1298,6 +1336,57 @@ function pintarTabla(L){
 }
 
 /* ── barras por sub-eje ── */
+/* Una línea por sección, con su recorrido en el tiempo. Lo que importa no es
+   el valor suelto sino hacia dónde va, así que al lado va el salto
+   entre la primera y la última medición. */
+function pintarEvolucion(L){
+  var box = document.getElementById('evolucion');
+  if(!box) return;
+  var serie = {};
+  L.forEach(function(d){
+    if(!d.ejes) return;
+    Object.keys(d.ejes).forEach(function(k){
+      var par = d.ejes[k];
+      if(!par || par[1] < 3) return;   // con una o dos preguntas el porcentaje es ruido
+      if(!serie[k]) serie[k] = [];
+      serie[k].push({ pct: Math.round(par[0] / par[1] * 100), fecha: d.fecha, ok: par[0], tot: par[1] });
+    });
+  });
+  var ks = Object.keys(serie).filter(function(k){ return serie[k].length >= 2; });
+  if(!ks.length){
+    box.innerHTML = '<p style="font-size:.9rem;color:var(--gray)">Todavía no hay ninguna sección medida dos veces. ' +
+      'En cuanto repitas un simulacro, aquí aparece su recorrido.</p>';
+    return;
+  }
+  ks.sort(function(a,b){
+    var da = serie[a][serie[a].length-1].pct - serie[a][0].pct;
+    var db = serie[b][serie[b].length-1].pct - serie[b][0].pct;
+    return da - db;                       // primero lo que más retrocedió
+  });
+  box.innerHTML = ks.map(function(k){
+    var s = serie[k], ult = s[s.length-1], dif = ult.pct - s[0].pct;
+    var cls = dif > 0 ? 'sube' : (dif < 0 ? 'baja' : 'igual');
+    var signo = dif > 0 ? '+' : '';
+    var W = 130, H = 34, pad = 4;
+    var x = function(i){ return pad + (s.length === 1 ? (W-2*pad)/2 : i * (W-2*pad) / (s.length-1)); };
+    var y = function(v){ return pad + (H-2*pad) - (v/100) * (H-2*pad); };
+    var pts = s.map(function(p,i){ return x(i) + ',' + y(p.pct); }).join(' ');
+    var col = dif > 0 ? '#1E8449' : (dif < 0 ? '#B03A2E' : '#8A93A6');
+    var svg = '<svg class="spark" viewBox="0 0 ' + W + ' ' + H + '" role="img" aria-label="Recorrido de ' + esc(k) + '">' +
+      '<line x1="' + pad + '" y1="' + y(0) + '" x2="' + (W-pad) + '" y2="' + y(0) + '" stroke="#E6E9F0" stroke-width="1"/>' +
+      '<polyline points="' + pts + '" fill="none" stroke="' + col + '" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>' +
+      s.map(function(p,i){ return '<circle cx="' + x(i) + '" cy="' + y(p.pct) + '" r="' + (i === s.length-1 ? 3.2 : 2) + '" fill="' + col + '"/>'; }).join('') +
+      '</svg>';
+    return '<div class="evofila">' +
+      '<span class="nom">' + esc(k) + '<br><small style="color:var(--gray);font-size:.74rem">' +
+         s.length + ' mediciones · última ' + ult.ok + '/' + ult.tot + '</small></span>' +
+      svg +
+      '<span class="val"><b class="' + cls + '">' + ult.pct + '%</b>' +
+      '<small class="' + cls + '">' + (dif === 0 ? 'sin cambio' : signo + dif + ' pts desde la primera') + '</small></span>' +
+      '</div>';
+  }).join('');
+}
+
 function pintarEjes(L){
   var box = document.getElementById('ejes'), acc = {};
   L.forEach(function(d){
@@ -1391,7 +1480,11 @@ document.getElementById('btnClear').addEventListener('click', function(){
 
 function render(){
   var L = todos();
-  pintarKpis(L); pintarChart(L); pintarTabla(L); pintarEjes(L);
+  /* Un contrarreloj de 14 preguntas no se compara con un simulacro de 140:
+     la tendencia y los KPIs usan solo los intentos completos. La tabla y la
+     evolución por sección sí los muestran todos. */
+  var completos = L.filter(function(d){ return !d.parcial; });
+  pintarKpis(completos); pintarChart(completos); pintarEvolucion(L); pintarTabla(L); pintarEjes(L);
 }
 render();
 window.__bitacora = render;

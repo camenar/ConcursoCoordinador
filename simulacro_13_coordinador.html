@@ -1680,6 +1680,26 @@ const SITUACIONES = [
    y ver, en cada una, qué marcaste frente a la clave oficial.  */
 const MI_INTENTO = {fecha:"14 de octubre de 2026", puntaje:76, total:140, resp:{1:"B",2:"C",3:"B",4:"C",5:"B",6:"B",7:"A",8:"C",9:"B",10:"B",11:"B",12:"B",13:"C",14:"C",15:"B",16:"C",17:"C",18:"B",19:"C",20:"A",21:"B",22:"A",23:"C",24:"C",25:"C",26:"B",27:"B",28:"A",29:"B",30:"A",31:"C",32:"A",33:"C",34:"A",35:"B",36:"A",37:"C",38:"A",39:"B",40:"C",41:"C",42:"B",43:"C",44:"A",45:"A",46:"B",47:"B",48:"C",49:"B",50:"C",51:"A",52:"A",53:"A",54:"B",55:"B",56:"A",57:"A",58:"B",59:"C",60:"A",61:"A",62:"A",63:"B",64:"C",65:"B",66:"A",67:"B",68:"C",69:"C",70:"A",71:"A",72:"B",73:"C",74:"C",75:"C",76:"A",77:"B",78:"B",79:"A",80:"A",81:"B",82:"A",83:"C",84:"A",85:"B",86:"A",87:"C",88:"C",89:"B",90:"A",91:"C",92:"A",93:"A",94:"B",95:"B",96:"C",97:"A",98:"C",99:"A",100:"B",101:"B",102:"B",103:"C",104:"A",105:"C",106:"C",107:"C",108:"B",109:"B",110:"B",111:"B",112:"C",113:"C",114:"B",115:"C",116:"C",117:"B",118:"C",119:"B",120:"C",121:"A",122:"B",123:"A",124:"C",125:"A",126:"C",127:"C",128:"C",129:"B",130:"A",131:"B",132:"C",133:"A",134:"C",135:"C",136:"B",137:"C",138:"B",139:"A",140:"A"}};
 
+
+/* ===== BITÁCORA COMPARTIDA =====
+   Los cinco simuladores viven en el mismo origen, así que escriben todos en
+   la misma clave de localStorage y la bitácora del portal los lee de ahí.
+   Se guardan los últimos 60 intentos; si falla, no pasa nada. */
+function registrarIntento(nombre, ok, total, secciones, extra){
+  try{
+    if(!total) return;
+    const k = 'bitacora_intentos';
+    const prev = JSON.parse(localStorage.getItem(k) || '[]');
+    const rec = { id: Date.now(), fecha: new Date().toISOString().slice(0,10),
+                  simulacro: nombre, ok: ok, total: total, secciones: secciones || {} };
+    /* deTotal = tamaño del instrumento completo. Permite distinguir un intento
+       entero de un contrarreloj parcial, que no son comparables entre sí. */
+    if(extra) for(const p in extra) rec[p] = extra[p];
+    prev.push(rec);
+    localStorage.setItem(k, JSON.stringify(prev.slice(-60)));
+  }catch(e){}
+}
+
 /* ====================== ESTADO ====================== */
 const LETRAS=["A","B","C"];
 let PLANO=[], idx=0, modo="guiada", respuestas=[], sitAbierta=true, sitPrevia=null, ultimaQ=-1;
@@ -2046,6 +2066,10 @@ function terminar(porTiempo){
     tr.innerHTML='<td>'+k+'</td><td class="num">'+tipos[k]+'</td>';
     tb.appendChild(tr);
   });
+
+  registrarIntento('Súper Simulacro 13', ok, baseIdx.length,
+    Object.keys(porEje).reduce(function(o,s){ o[s]=[porEje[s].ok,porEje[s].tot]; return o; }, {}),
+    { cronometrado: contra, minutos: Math.round(limite/60) || 0, segundos: Math.round(segs), deTotal: PLANO.length });
 
   const w=document.getElementById('rWrong'); w.innerHTML=""; let hubo=false;
   baseIdx.forEach(function(i){

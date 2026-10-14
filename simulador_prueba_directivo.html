@@ -120,6 +120,12 @@ footer{text-align:center;color:var(--gray);font-size:.8rem;padding:26px 16px 10p
 .ritmo{display:flex;gap:9px;flex-wrap:wrap;margin-top:14px}
 .ritmo div{flex:1 1 118px;background:#f5f7fc;border:1px solid var(--line);border-radius:10px;padding:10px 12px}
 .ritmo b{display:block;font-size:1.25rem;color:var(--navy);line-height:1.2}
+.secfila{display:flex;align-items:center;gap:.6rem;padding:.42rem 0;border-bottom:1px solid var(--line)}
+.secfila .nom{flex:1;font-size:.86rem;line-height:1.3}
+.secfila .barra{flex:0 0 120px;height:8px;background:#e6e9f0;border-radius:99px;overflow:hidden}
+.secfila .barra i{display:block;height:100%;border-radius:99px}
+.secfila b{flex:0 0 54px;text-align:right;font-size:.84rem;white-space:nowrap}
+.sectit{margin:1.3rem 0 .5rem;color:var(--navy);font-size:1rem;text-align:left}
 .ritmo span{font-size:.68rem;color:var(--gray);text-transform:uppercase;letter-spacing:.5px}
 .note{background:#fff8f1;border:1px solid #f3d9bd;border-radius:8px;padding:12px 14px;font-size:.85rem;color:#7a4b12;margin-top:14px}
 @media(max-width:600px){.modes{grid-template-columns:1fr}h1{font-size:1.05rem}.card{padding:16px}}
@@ -234,6 +240,7 @@ footer{text-align:center;color:var(--gray);font-size:.8rem;padding:26px 16px 10p
     <div class="score"><div class="n" id="rNota">0.0</div><div class="p" id="rTxt"></div></div>
     <div class="stats" id="rStats"></div>
     <div id="rRitmo"></div>
+    <div id="rSecciones"></div>
     <div class="nav" style="margin-top:20px">
       <button class="btn" id="btnAgain">Nuevo intento</button>
       <button class="btn sec" id="btnWrong">Repasar solo las falladas</button>
@@ -348,6 +355,26 @@ function reanudar(){
   if(S.modo==='simulacro'){ $('#clock').classList.remove('hide'); S.timer=setInterval(tick,1000); tick(); }
   else $('#clock').classList.add('hide');
   show('scTest'); render();
+}
+
+
+/* ===== BITÁCORA COMPARTIDA =====
+   Los cinco simuladores viven en el mismo origen, así que escriben todos en
+   la misma clave de localStorage y la bitácora del portal los lee de ahí.
+   Se guardan los últimos 60 intentos; si falla, no pasa nada. */
+function registrarIntento(nombre, ok, total, secciones, extra){
+  try{
+    if(!total) return;
+    const k = 'bitacora_intentos';
+    const prev = JSON.parse(localStorage.getItem(k) || '[]');
+    const rec = { id: Date.now(), fecha: new Date().toISOString().slice(0,10),
+                  simulacro: nombre, ok: ok, total: total, secciones: secciones || {} };
+    /* deTotal = tamaño del instrumento completo. Permite distinguir un intento
+       entero de un contrarreloj parcial, que no son comparables entre sí. */
+    if(extra) for(const p in extra) rec[p] = extra[p];
+    prev.push(rec);
+    localStorage.setItem(k, JSON.stringify(prev.slice(-60)));
+  }catch(e){}
 }
 
 /* ---------- inicio ---------- */
@@ -570,10 +597,34 @@ function finish(){
     <div class="stat"><b>${sin}</b><small>Sin responder</small></div>
     <div class="stat"><b>${Object.values(S.flags).filter(Boolean).length}</b><small>Marcadas</small></div>
     <div class="stat"><b>${Math.floor(seg/60)}:${String(seg%60).padStart(2,'0')}</b><small>Tiempo</small></div>`;
+  // Desempeño por sección: es lo que dice a qué volver, no la lista suelta.
+  const porSec = {};
+  base.forEach(q => {
+    const s = q.sec || 'Sin sección';
+    if (!porSec[s]) porSec[s] = { ok: 0, tot: 0 };
+    porSec[s].tot++;
+    if (S.resp[q.num] === q.resp) porSec[s].ok++;
+  });
+  const secs = Object.keys(porSec).sort((a, b) => porSec[a].ok / porSec[a].tot - porSec[b].ok / porSec[b].tot);
+  $('#rSecciones').innerHTML = secs.length < 2 ? '' :
+    '<h3 class="sectit">Desempeño por sección</h3>' +
+    '<div style="font-size:.82rem;color:var(--gray);margin-bottom:.5rem">De la más floja a la más firme, sobre lo que respondiste.</div>' +
+    secs.map(s => {
+      const d = porSec[s], pc = Math.round(d.ok / d.tot * 100);
+      const col = pc >= 70 ? 'var(--ok)' : pc >= 50 ? 'var(--orange)' : 'var(--bad)';
+      return '<div class="secfila"><span class="nom">' + esc(s) + '</span>' +
+             '<span class="barra"><i style="width:' + pc + '%;background:' + col + '"></i></span>' +
+             '<b style="color:' + col + '">' + d.ok + '/' + d.tot + '</b></div>';
+    }).join('');
+
   $('#rTabla').innerHTML = S.lista.map(q=>{
     const r=S.resp[q.num]; const st = !r ? '<span class="pill na">sin resp.</span>' : (r===q.resp?'<span class="pill ok">correcta</span>':'<span class="pill bad">incorrecta</span>');
     return `<tr class="${r===q.resp?'':'w'}"><td>${q.num}${S.flags[q.num]?' ⚑':''}</td><td>${esc(q.bloque)}</td><td class="c">${r?dispOf(q,r):'—'}</td><td class="c">${dispOf(q,q.resp)}</td><td class="c">${st}</td></tr>`;
   }).join('');
+  registrarIntento('Banco de errores', ok, tot,
+    Object.keys(porSec).reduce(function(o,s){ o[s]=[porSec[s].ok,porSec[s].tot]; return o; }, {}),
+    { cronometrado: cronometrado, minutos: Math.round(S.limite/60) || 0, segundos: seg, deTotal: S.lista.length });
+
   $('#rRev').innerHTML = S.lista.map(q=>{
     const r=S.resp[q.num]; const ok2 = r===q.resp;
     return `<div class="rev"><div class="t">${q.num}. ${esc(q.enunciado)}</div>
