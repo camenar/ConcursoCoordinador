@@ -102,6 +102,17 @@ tr.w td{background:#fdf3f2}
 .hist{font-size:.85rem;color:var(--gray)}
 .hist li{margin-left:18px;margin-bottom:4px}
 footer{text-align:center;color:var(--gray);font-size:.8rem;padding:26px 16px 10px;line-height:1.6}
+.minbtns{display:flex;gap:8px;flex-wrap:wrap;margin-top:9px}
+.minbtn{flex:1 1 86px;font-family:inherit;font-size:.95rem;font-weight:bold;color:var(--navy);
+  background:#fff;border:2px solid var(--line);border-radius:10px;padding:11px 8px;cursor:pointer;
+  transition:transform .16s ease,border-color .16s ease}
+.minbtn:hover{transform:translateY(-2px);border-color:var(--navy-l)}
+.minbtn:focus-visible{outline:3px solid var(--orange);outline-offset:2px}
+.minbtn small{display:block;font-weight:normal;font-size:.68rem;color:var(--gray);margin-top:2px}
+.ritmo{display:flex;gap:9px;flex-wrap:wrap;margin-top:14px}
+.ritmo div{flex:1 1 118px;background:#f5f7fc;border:1px solid var(--line);border-radius:10px;padding:10px 12px}
+.ritmo b{display:block;font-size:1.25rem;color:var(--navy);line-height:1.2}
+.ritmo span{font-size:.68rem;color:var(--gray);text-transform:uppercase;letter-spacing:.5px}
 .note{background:#fff8f1;border:1px solid #f3d9bd;border-radius:8px;padding:12px 14px;font-size:.85rem;color:#7a4b12;margin-top:14px}
 @media(max-width:600px){.modes{grid-template-columns:1fr}h1{font-size:1.05rem}.card{padding:16px}}
 @media print{header,.bar,.nav,.btn,.flag{display:none!important}.card{box-shadow:none;page-break-inside:avoid}}
@@ -148,6 +159,14 @@ footer{text-align:center;color:var(--gray);font-size:.8rem;padding:26px 16px 10p
       <div>
         <label class="fld" for="fMin">Minutos (solo simulacro)</label>
         <input type="number" id="fMin" min="0" step="5" value="0" placeholder="0 = sin límite">
+        <div class="minbtns">
+          <button class="minbtn" type="button" onclick="contrarreloj(30)">30<small>min</small></button>
+          <button class="minbtn" type="button" onclick="contrarreloj(60)">60<small>min</small></button>
+          <button class="minbtn" type="button" onclick="contrarreloj(90)">90<small>min</small></button>
+          <button class="minbtn" type="button" onclick="contrarreloj(120)">120<small>min</small></button>
+        </div>
+        <div class="note" style="margin-top:9px;font-size:.78rem">Con límite de tiempo el puntaje se calcula
+        <b>solo sobre lo que alcances a responder</b>, y al final te muestra tu ritmo.</div>
       </div>
       <div>
         <label class="fld">Opciones de respuesta</label>
@@ -204,6 +223,7 @@ footer{text-align:center;color:var(--gray);font-size:.8rem;padding:26px 16px 10p
     <h2>Resultados</h2>
     <div class="score"><div class="n" id="rNota">0.0</div><div class="p" id="rTxt"></div></div>
     <div class="stats" id="rStats"></div>
+    <div id="rRitmo"></div>
     <div class="nav" style="margin-top:20px">
       <button class="btn" id="btnAgain">Nuevo intento</button>
       <button class="btn sec" id="btnWrong">Repasar solo las falladas</button>
@@ -281,6 +301,24 @@ function fillCant(){
   [10,15,20,25,30,40].forEach(n=>{ if(n<total) opts.push(n); });
   opts.push(total);
   $('#fCant').innerHTML = opts.map(n=>`<option value="${n}"${n===total?' selected':''}>${n} pregunta${n>1?'s':''}</option>`).join('');
+}
+
+/* Arranca un intento cronometrado: fija los minutos, fuerza modo simulacro
+   y deja que start() haga el resto. El puntaje saldrá sobre lo respondido. */
+function contrarreloj(min){
+  $('#fMin').value = min;
+  S.modo = 'simulacro';
+  $$('.mode').forEach(m => m.classList.toggle('on', m.dataset.mode === 'simulacro'));
+  start();
+}
+
+/* duración larga en lenguaje natural: «1 h 12 min», «48 min» */
+function durLarga(s){
+  s = Math.max(0, Math.round(s));
+  const hh = Math.floor(s/3600), mm = Math.round((s%3600)/60);
+  if(hh && mm) return hh+' h '+mm+' min';
+  if(hh) return hh+' h';
+  return Math.max(1, mm)+' min';
 }
 
 function start(){
@@ -369,18 +407,47 @@ $('#btnQuit').onclick = ()=>{ if(confirm('¿Salir del intento? Se perderá el av
 /* ---------- resultados ---------- */
 function finish(){
   clearInterval(S.timer);
-  const tot = S.lista.length;
-  let ok=0, sin=0;
-  S.lista.forEach(q=>{ const r=S.resp[q.num]; if(!r) sin++; else if(r===q.resp) ok++; });
+  // Con límite de tiempo, lo que no alcanzaste no cuenta: el puntaje se
+  // calcula sobre lo respondido. Sin límite, las vacías cuentan como error.
+  const cronometrado = S.limite > 0;
+  const respondidas = S.lista.filter(q => S.resp[q.num]);
+  const sin = S.lista.length - respondidas.length;
+  const base = cronometrado ? respondidas : S.lista;
+  const tot = base.length;
+  let ok=0;
+  base.forEach(q=>{ if(S.resp[q.num]===q.resp) ok++; });
   const pct = tot? ok/tot : 0;
   const nota = (1 + pct*4).toFixed(1);
   $('#rNota').textContent = nota;
   $('#rNota').style.color = pct>=0.6 ? 'var(--ok)' : 'var(--bad)';
-  $('#rTxt').textContent = `${ok} de ${tot} correctas (${Math.round(pct*100)}%) · escala 1.0 – 5.0`;
+  $('#rTxt').textContent = cronometrado
+    ? `${ok} de ${tot} correctas sobre lo que alcanzaste (${Math.round(pct*100)}%) · escala 1.0 – 5.0`
+    : `${ok} de ${tot} correctas (${Math.round(pct*100)}%) · escala 1.0 – 5.0`;
   const seg = Math.floor((Date.now()-S.t0)/1000);
+  const rr = $('#rRitmo');
+  if(cronometrado && tot){
+    const porPreg = seg/tot;
+    const proy = Math.min(140, porPreg>0 ? Math.round(300*60/porPreg) : 140);
+    const mm = Math.floor(porPreg/60), ss = Math.round(porPreg%60);
+    rr.innerHTML =
+      '<div class="ritmo">'+
+      '<div><b>'+tot+' / '+S.lista.length+'</b><span>alcanzadas</span></div>'+
+      '<div><b>'+Math.floor(seg/60)+':'+String(seg%60).padStart(2,'0')+'</b><span>tiempo usado</span></div>'+
+      '<div><b>'+(mm?mm+'m ':'')+ss+'s</b><span>por pregunta</span></div>'+
+      '<div><b>'+proy+'</b><span>alcanzarías en 5 h</span></div>'+
+      '</div>'+
+      '<p style="font-size:.88rem;color:var(--gray);margin-top:11px">'+
+      (proy>=140
+        ? 'A este ritmo <b>terminas las 140</b> dentro de las cinco horas, y te sobraría '+durLarga(Math.max(0,300*60-porPreg*140))+'.'
+        : 'A este ritmo llegarías a <b>'+proy+' de 140</b> y dejarías <b>'+(140-proy)+' sin responder</b>. El examen exige 2 min 9 s por pregunta.')+
+      (sin ? ' Las '+sin+' que no alcanzaste no cuentan ni a favor ni en contra.' : '')+
+      '</p>';
+  } else if(cronometrado){
+    rr.innerHTML = '<p style="font-size:.88rem;color:var(--gray);margin-top:11px">Se acabó el tiempo sin ninguna respuesta registrada.</p>';
+  } else { rr.innerHTML = ''; }
   $('#rStats').innerHTML = `
     <div class="stat"><b>${ok}</b><small>Correctas</small></div>
-    <div class="stat"><b>${tot-ok-sin}</b><small>Incorrectas</small></div>
+    <div class="stat"><b>${cronometrado ? tot-ok : tot-ok-sin}</b><small>Incorrectas</small></div>
     <div class="stat"><b>${sin}</b><small>Sin responder</small></div>
     <div class="stat"><b>${Object.values(S.flags).filter(Boolean).length}</b><small>Marcadas</small></div>
     <div class="stat"><b>${Math.floor(seg/60)}:${String(seg%60).padStart(2,'0')}</b><small>Tiempo</small></div>`;

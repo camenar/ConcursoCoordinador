@@ -181,6 +181,22 @@ td.num{text-align:right;white-space:nowrap;font-weight:bold;}
 .hint{font-size:13px;color:var(--muted);margin-top:10px;}
 .foot{text-align:center;font-size:12px;color:var(--muted);margin-top:28px;}
 .hidden{display:none !important;}
+.reloj{font-variant-numeric:tabular-nums;font-weight:bold;font-size:15px;letter-spacing:.5px;
+  background:rgba(255,255,255,.15);border-radius:8px;padding:3px 10px;margin-left:10px;}
+.reloj.poco{background:var(--orange);}
+.reloj.critico{background:#C0392B;animation:lat 1s ease-in-out infinite;}
+@keyframes lat{50%{opacity:.55}}
+.minbtns{display:flex;gap:9px;flex-wrap:wrap;margin-top:12px;}
+.minbtn{flex:1 1 110px;font-family:inherit;font-size:15px;font-weight:bold;color:var(--navy);
+  background:#fff;border:2px solid var(--line);border-radius:12px;padding:14px 10px;cursor:pointer;
+  transition:transform 160ms ease,border-color 160ms ease;}
+.minbtn:hover{transform:translateY(-2px);border-color:var(--navy-soft);}
+.minbtn:focus-visible{outline:3px solid var(--orange);outline-offset:2px;}
+.minbtn small{display:block;font-weight:normal;font-size:12px;color:var(--muted);margin-top:3px;}
+.ritmo{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px;}
+.ritmo div{flex:1 1 130px;background:#F5F7FC;border:1px solid var(--line);border-radius:10px;padding:11px 13px;}
+.ritmo b{display:block;font-size:20px;color:var(--navy);line-height:1.2;}
+.ritmo span{font-size:11.5px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;}
 .reanudar{border-left:5px solid var(--ok);background:var(--ok-bg);border:1px solid #B7E1C6;
   border-left-width:5px;border-radius:0 12px 12px 0;padding:14px 16px;margin-top:16px;font-size:14.5px;}
 .reanudar b{color:var(--ok);}
@@ -208,6 +224,7 @@ td.num{text-align:right;white-space:nowrap;font-weight:bold;}
   <div class="inner">
     <div class="brand">Simulacro <span>Coordinador</span> · 46 preguntas</div>
     <div class="counter" id="counter"></div>
+    <span class="reloj hidden" id="reloj">00:00</span>
   </div>
   <div class="progress"><i id="pbar"></i></div>
 </div>
@@ -226,6 +243,17 @@ td.num{text-align:right;white-space:nowrap;font-weight:bold;}
         <span class="tag">Gestión de la comunidad</span>
       </div>
       <div id="reanudar"></div>
+
+      <h3 style="margin-top:18px">Contrarreloj</h3>
+      <p class="lead">Respondes las que alcances y el puntaje sale <b>sobre lo que alcanzaste</b>,
+      no sobre las 46. Al final te digo tu ritmo y cuántas llegarías a resolver en las cinco horas del examen.</p>
+      <div class="minbtns">
+        <button class="minbtn" type="button" onclick="iniciarReloj(30)">30 min<small>≈ 14 preguntas</small></button>
+        <button class="minbtn" type="button" onclick="iniciarReloj(60)">60 min<small>≈ 28 preguntas</small></button>
+        <button class="minbtn" type="button" onclick="iniciarReloj(90)">90 min<small>≈ 42 preguntas</small></button>
+        <button class="minbtn" type="button" onclick="iniciarReloj(120)">120 min<small>≈ 56 preguntas</small></button>
+      </div>
+      <p class="hint">El ritmo real del examen son <b>2 min 9 s por pregunta</b>: 140 preguntas en 5 horas.</p>
 
       <h3 style="margin-top:18px">Elige cómo practicar</h3>
       <p class="lead">En <b>práctica guiada</b> ves la justificación después de cada respuesta. En <b>simulacro</b> respondes las 46 seguidas y revisas todo al final.</p>
@@ -255,6 +283,7 @@ td.num{text-align:right;white-space:nowrap;font-weight:bold;}
       <div class="btnrow">
         <button class="btn ghost" id="btnPrev" onclick="ir(-1)">Anterior</button>
         <button class="btn" id="btnNext" onclick="ir(1)">Siguiente</button>
+        <button class="btn ghost hidden" id="btnFin" onclick="terminar()">Terminar ahora</button>
         <span class="guardado" id="guardado">avance guardado</span>
       </div>
     </div>
@@ -272,6 +301,7 @@ td.num{text-align:right;white-space:nowrap;font-weight:bold;}
         <div class="pct" id="rPct">0%</div>
       </div>
       <p class="lead" id="rMsg" style="margin-top:14px"></p>
+      <div id="rRitmo"></div>
     </div>
 
     <div class="card">
@@ -614,6 +644,55 @@ const SITUACIONES = [
 /* ====================== ESTADO ====================== */
 const LETRAS=["A","B","C"];
 let PLANO=[], idx=0, modo="guiada", respuestas=[], sitAbierta=true, sitPrevia=null, ultimaQ=-1;
+let limite=0, t0=0, tic=null, gastado=0, tickN=0;
+
+/* ====================== CONTRARRELOJ ====================== */
+function mmss(s){
+  s=Math.max(0,Math.round(s));
+  return String(Math.floor(s/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0');
+}
+function durLarga(s){
+  s=Math.max(0,Math.round(s));
+  const hh=Math.floor(s/3600), mm=Math.round((s%3600)/60);
+  if(hh&&mm) return hh+' h '+mm+' min';
+  if(hh) return hh+' h';
+  return Math.max(1,mm)+' min';
+}
+function transcurrido(){ return gastado + (t0 ? (Date.now()-t0)/1000 : 0); }
+function pintarReloj(){
+  const el=document.getElementById('reloj');
+  if(!limite){ el.classList.add('hidden'); return; }
+  el.classList.remove('hidden');
+  const queda=limite-transcurrido();
+  el.textContent=mmss(queda);
+  el.classList.toggle('poco', queda<=300 && queda>60);
+  el.classList.toggle('critico', queda<=60);
+  if(queda<=0){ pararReloj(); terminar(true); }
+}
+function arrancarReloj(){
+  clearInterval(tic); t0=Date.now(); tickN=0; pintarReloj();
+  tic=setInterval(function(){
+    pintarReloj();
+    if(limite && (++tickN % 10 === 0)) guardar(true);
+  },1000);
+}
+function pararReloj(){
+  clearInterval(tic); tic=null;
+  if(t0){ gastado+=(Date.now()-t0)/1000; t0=0; }
+}
+function iniciarReloj(min){
+  if(leerSesion() && !confirm('Tienes un intento a medias guardado. Si empiezas el contrarreloj se borra. ¿Continuar?')) return;
+  modo='contrarreloj'; PLANO=aplanar(SITUACIONES);
+  respuestas=new Array(PLANO.length).fill(null);
+  idx=0; sitPrevia=null; sitAbierta=true; ultimaQ=-1;
+  limite=min*60; gastado=0;
+  borrarSesion();
+  document.getElementById('start').classList.add('hidden');
+  document.getElementById('results').classList.add('hidden');
+  document.getElementById('quiz').classList.remove('hidden');
+  document.getElementById('btnFin').classList.remove('hidden');
+  arrancarReloj(); pintar();
+}
 
 /* ====================== GUARDADO DE SESIÓN ======================
    El avance se guarda solo después de cada respuesta, en este navegador,
@@ -622,14 +701,14 @@ const CLAVE_SESION = 'sim46_sesion_v1';
 const TODAS = (function(){ const o={}; SITUACIONES.forEach(function(s){
   s.preguntas.forEach(function(q){ o[q.n]={...q, sit:s}; }); }); return o; })();
 
-function guardar(){
+function guardar(silencioso){
   try{
     localStorage.setItem(CLAVE_SESION, JSON.stringify({
-      v:1, modo:modo, idx:idx, respuestas:respuestas,
+      v:1, modo:modo, idx:idx, respuestas:respuestas, limite:limite, gastado:transcurrido(),
       nums:PLANO.map(function(q){return q.n;}), ts:Date.now()
     }));
     const g=document.getElementById('guardado');
-    if(g){ g.classList.add('on'); clearTimeout(window._gt); window._gt=setTimeout(function(){g.classList.remove('on');},1400); }
+    if(g && !silencioso){ g.classList.add('on'); clearTimeout(window._gt); window._gt=setTimeout(function(){g.classList.remove('on');},1400); }
   }catch(e){}
 }
 function leerSesion(){
@@ -660,7 +739,9 @@ function pintarReanudar(){
   const hechas=s.respuestas.filter(function(x){return x!==null;}).length;
   caja.innerHTML='<div class="reanudar"><b>Tienes un intento a medias.</b> '+
     'Llevabas <b>'+hechas+' de '+s.respuestas.length+'</b> preguntas en modo '+
-    (s.modo==='guiada'?'práctica guiada':'simulacro')+', guardado '+fechaCorta(s.ts)+'. '+
+    (s.modo==='guiada'?'práctica guiada':s.modo==='contrarreloj'
+      ? ('contrarreloj de '+Math.round((s.limite||0)/60)+' min, con '+mmss((s.limite||0)-(s.gastado||0))+' por delante')
+      : 'simulacro')+', guardado '+fechaCorta(s.ts)+'. '+
     'Puedes seguir donde quedaste.'+
     '<div class="btnrow">'+
     '<button class="btn" type="button" onclick="reanudar()">Continuar</button>'+
@@ -685,6 +766,9 @@ function reanudar(){
   respuestas=s.respuestas.slice();
   idx=Math.min(Math.max(s.idx,0), PLANO.length-1);
   sitPrevia=null; sitAbierta=true; ultimaQ=-1;
+  limite=s.limite||0; gastado=s.gastado||0; t0=0;
+  document.getElementById('btnFin').classList.toggle('hidden', !limite);
+  if(limite) arrancarReloj(); else document.getElementById('reloj').classList.add('hidden');
   document.getElementById('start').classList.add('hidden');
   document.getElementById('results').classList.add('hidden');
   document.getElementById('quiz').classList.remove('hidden');
@@ -698,6 +782,9 @@ function aplanar(lista){
 }
 
 function iniciar(m){
+  pararReloj(); limite=0; gastado=0;
+  document.getElementById('reloj').classList.add('hidden');
+  document.getElementById('btnFin').classList.add('hidden');
   // Si hay un intento guardado, empezar de cero lo descarta: hay que avisar.
   if(leerSesion() && !confirm('Tienes un intento a medias guardado. Si empiezas de nuevo se borra. ¿Continuar de todos modos?')) return;
   modo=m;
@@ -799,7 +886,7 @@ function pintar(){
 function responder(i){
   if(respuestas[idx]!==null) return;
   respuestas[idx]=i;
-  if(modo==="simulacro"){
+  if(modo!=="guiada"){
     if(idx<PLANO.length-1){ idx++; pintar(); }
     else pintar();
   }else{
@@ -815,22 +902,49 @@ function ir(d){
   idx=nuevo; pintar(); guardar();
 }
 
-function terminar(){
+function terminar(porTiempo){
+  const contra = (modo==="contrarreloj");
   const sinResponder = respuestas.filter(x=>x===null).length;
-  if(sinResponder>0 && !confirm("Quedan "+sinResponder+" preguntas sin responder. ¿Ver resultados de todas formas?")) return;
+  if(!contra && sinResponder>0 && !confirm("Quedan "+sinResponder+" preguntas sin responder. ¿Ver resultados de todas formas?")) return;
+  if(contra && !porTiempo && respuestas.every(x=>x===null)){ alert("Todavía no has respondido ninguna."); return; }
+  pararReloj();
+  const segs = contra ? transcurrido() : 0;
+  // con reloj, lo que no alcanzaste no cuenta
+  const baseIdx = PLANO.map((q,i)=>i).filter(i => contra ? respuestas[i]!==null : true);
 
   let ok=0; const porSub={};
-  PLANO.forEach((q,i)=>{
+  baseIdx.forEach(i=>{
+    const q=PLANO[i];
     const bien = respuestas[i]===q.k;
     if(bien) ok++;
     const s=q.sit.subeje;
     if(!porSub[s]) porSub[s]={ok:0,tot:0};
     porSub[s].tot++; if(bien) porSub[s].ok++;
   });
-  const pct=Math.round(ok/PLANO.length*100);
+  const den = baseIdx.length || 1;
+  const pct=Math.round(ok/den*100);
 
   document.getElementById('rScore').textContent=ok;
-  document.querySelector('#results .of').textContent="respuestas correctas de "+PLANO.length;
+  document.querySelector('#results .of').textContent = contra
+    ? ("respuestas correctas de las "+baseIdx.length+" que alcanzaste")
+    : ("respuestas correctas de "+PLANO.length);
+
+  const rr=document.getElementById('rRitmo');
+  if(contra && baseIdx.length){
+    const porPreg=segs/baseIdx.length;
+    const proy=Math.min(140, porPreg>0 ? Math.round(300*60/porPreg) : 140);
+    const mm=Math.floor(porPreg/60), ss=Math.round(porPreg%60);
+    rr.innerHTML='<div class="ritmo">'+
+      '<div><b>'+baseIdx.length+' / '+PLANO.length+'</b><span>alcanzadas</span></div>'+
+      '<div><b>'+mmss(segs)+'</b><span>tiempo usado</span></div>'+
+      '<div><b>'+(mm?mm+'m ':'')+ss+'s</b><span>por pregunta</span></div>'+
+      '<div><b>'+proy+'</b><span>alcanzarías en 5 h</span></div></div>'+
+      '<p class="lead" style="margin-top:12px">'+
+      (proy>=140
+        ? 'A este ritmo <b>terminas las 140</b> de la prueba real dentro de las cinco horas, y te sobraría '+durLarga(Math.max(0,300*60-porPreg*140))+'.'
+        : 'A este ritmo llegarías a <b>'+proy+' de 140</b> en la prueba real y dejarías <b>'+(140-proy)+' sin responder</b>. El examen exige 2 min 9 s por pregunta.')+
+      (sinResponder ? ' Las '+sinResponder+' que no alcanzaste no cuentan ni a favor ni en contra.' : '')+'</p>';
+  } else { rr.innerHTML=''; }
   document.getElementById('rPct').textContent=pct+"%";
   document.getElementById('rMsg').textContent =
     pct>=85 ? "Dominio sólido del criterio técnico. Mantén el ritmo con las que fallaste."
@@ -848,7 +962,8 @@ function terminar(){
 
   const w=document.getElementById('rWrong'); w.innerHTML="";
   let hubo=false;
-  PLANO.forEach((q,i)=>{
+  baseIdx.forEach(i=>{
+    const q=PLANO[i];
     if(respuestas[i]===q.k) return;
     hubo=true;
     const marc = respuestas[i]===null ? "sin responder" : LETRAS[respuestas[i]]+" · "+q.o[respuestas[i]];
@@ -860,8 +975,11 @@ function terminar(){
       '<div class="why">'+q.j+'</div>';
     w.appendChild(div);
   });
-  if(!hubo) w.innerHTML='<p class="lead">Ninguna fallada. Las 46 con clave correcta.</p>';
+  if(!hubo) w.innerHTML='<p class="lead">Ninguna fallada en esta ronda.</p>';
 
+  limite=0; gastado=0;
+  document.getElementById('reloj').classList.add('hidden');
+  document.getElementById('btnFin').classList.add('hidden');
   borrarSesion();
   document.getElementById('quiz').classList.add('hidden');
   document.getElementById('results').classList.remove('hidden');

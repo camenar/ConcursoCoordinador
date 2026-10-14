@@ -161,6 +161,21 @@ body {
 .option-btn.wrong-reveal .letter { background: var(--red); color: #fff; }
 .option-btn.disabled { cursor: default; opacity: .85; }
 .option-btn.dimmed { opacity: .5; }
+.option-btn.picked { border-color: var(--navy); background: #eef1f9; }
+.q-nav-btn.nav-picked { border-color: var(--navy); color: var(--navy); background: #eef1f9; }
+.score-pill.reloj { background: var(--navy); color: #fff; font-variant-numeric: tabular-nums; }
+.score-pill.reloj.poco { background: #e67e22; }
+.score-pill.reloj.critico { background: #c0392b; animation: lat 1s ease-in-out infinite; }
+@keyframes lat { 50% { opacity: .55 } }
+.minbtns { display: flex; gap: .5rem; flex-wrap: wrap; max-width: 380px; margin: 0 auto 1rem; }
+.minbtn { flex: 1 1 80px; font-family: inherit; font-size: .95rem; font-weight: 700; color: var(--navy);
+  background: #fff; border: 2px solid var(--border, #dde2ee); border-radius: 10px; padding: .6rem .3rem; cursor: pointer; }
+.minbtn:hover { border-color: var(--navy); }
+.minbtn small { display: block; font-weight: 400; font-size: .68rem; color: var(--text-muted); }
+.ritmo { display: flex; gap: .55rem; flex-wrap: wrap; margin-top: 1rem; }
+.ritmo div { flex: 1 1 110px; background: #f5f7fc; border: 1px solid #dde2ee; border-radius: 10px; padding: .6rem .7rem; }
+.ritmo b { display: block; font-size: 1.2rem; color: var(--navy); line-height: 1.2; }
+.ritmo span { font-size: .66rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: .5px; }
 
 .justification {
   margin-top: .7rem; padding: .8rem;
@@ -246,6 +261,7 @@ body {
   <span class="score-pill wrong" id="pill-wrong">✗ <span id="sc-wrong">0</span></span>
   <span class="score-pill pending" id="pill-pending">◻ <span id="sc-pending">46</span></span>
   <span class="score-pill pct" id="pill-pct"><span id="sc-pct">0</span>%</span>
+  <span class="score-pill reloj hidden" id="pill-reloj">00:00</span>
 </div>
 <div id="app-progress" class="progress-bar hidden"><div class="progress-fill" id="progress-fill" style="width:0%"></div></div>
 
@@ -267,6 +283,18 @@ body {
       <button class="btn btn-primary" onclick="startQuiz()" style="font-size:1rem;padding:.7rem 2rem;">
         Iniciar simulacro
       </button>
+
+      <h3 style="color:var(--navy);margin:2rem 0 .3rem;font-size:1rem;">Contrarreloj</h3>
+      <p style="color:var(--text-muted);max-width:420px;margin:0 auto .8rem;font-size:.85rem;">
+        Respondes las que alcances, sin ver la clave hasta el final, y el puntaje sale
+        <b>sobre lo que alcanzaste</b>. Al terminar te muestra tu ritmo.
+      </p>
+      <div class="minbtns">
+        <button class="minbtn" type="button" onclick="startContrarreloj(30)">30<small>min</small></button>
+        <button class="minbtn" type="button" onclick="startContrarreloj(60)">60<small>min</small></button>
+        <button class="minbtn" type="button" onclick="startContrarreloj(90)">90<small>min</small></button>
+        <button class="minbtn" type="button" onclick="startContrarreloj(120)">120<small>min</small></button>
+      </div>
     </div>
   </div>
 
@@ -309,6 +337,48 @@ function shuffle(arr) {
     [a[i], a[j]] = [a[j], a[i]];
   }
   return a;
+}
+
+/* ============ CONTRARRELOJ ============
+   Con reloj no se revela la clave ni se lleva marcador en vivo: eso
+   delataría las respuestas. El puntaje se calcula sobre lo respondido. */
+let contra = false, limite = 0, t0 = 0, tic = null, gastado = 0;
+
+function mmss(s){
+  s = Math.max(0, Math.round(s));
+  return String(Math.floor(s/60)).padStart(2,'0') + ':' + String(s%60).padStart(2,'0');
+}
+function durLarga(s){
+  s = Math.max(0, Math.round(s));
+  const hh = Math.floor(s/3600), mm = Math.round((s%3600)/60);
+  if(hh && mm) return hh + ' h ' + mm + ' min';
+  if(hh) return hh + ' h';
+  return Math.max(1, mm) + ' min';
+}
+function transcurrido(){ return gastado + (t0 ? (Date.now()-t0)/1000 : 0); }
+function pintarReloj(){
+  const el = document.getElementById('pill-reloj');
+  if(!limite){ el.classList.add('hidden'); return; }
+  el.classList.remove('hidden');
+  const queda = limite - transcurrido();
+  el.textContent = mmss(queda);
+  el.classList.toggle('poco', queda <= 300 && queda > 60);
+  el.classList.toggle('critico', queda <= 60);
+  if(queda <= 0){ pararReloj(); showResults(true); }
+}
+function arrancarReloj(){
+  clearInterval(tic); t0 = Date.now(); pintarReloj();
+  tic = setInterval(pintarReloj, 1000);
+}
+function pararReloj(){
+  clearInterval(tic); tic = null;
+  if(t0){ gastado += (Date.now()-t0)/1000; t0 = 0; }
+}
+function startContrarreloj(min){
+  contra = true; limite = min*60; gastado = 0;
+  startQuiz();
+  ['pill-correct','pill-wrong','pill-pct'].forEach(id => document.getElementById(id).classList.add('hidden'));
+  arrancarReloj();
 }
 
 function startQuiz() {
@@ -375,7 +445,8 @@ function renderBlock() {
   block.questions.forEach(q => {
     const answered = userAnswers[q.num] !== undefined;
     const isCorrect = answered && userAnswers[q.num] === q.key;
-    const cardClass = answered ? (isCorrect ? 'answered-correct' : 'answered-wrong') : '';
+    const reveal = answered && !contra;          // con reloj no se destapa nada
+    const cardClass = reveal ? (isCorrect ? 'answered-correct' : 'answered-wrong') : '';
     
     html += '<div class="q-card ' + cardClass + '" id="q-' + q.num + '">';
     html += '<div class="q-num">Pregunta ' + q.num + ' de 46</div>';
@@ -385,8 +456,11 @@ function renderBlock() {
       let optClass = 'option-btn';
       if (answered) {
         optClass += ' disabled';
-        if (opt.letter === q.key) optClass += ' correct-reveal';
-        else if (opt.letter === userAnswers[q.num] && opt.letter !== q.key) optClass += ' wrong-reveal';
+        if (reveal) {
+          if (opt.letter === q.key) optClass += ' correct-reveal';
+          else if (opt.letter === userAnswers[q.num] && opt.letter !== q.key) optClass += ' wrong-reveal';
+          else optClass += ' dimmed';
+        } else if (opt.letter === userAnswers[q.num]) optClass += ' picked';
         else optClass += ' dimmed';
       }
       html += '<button class="' + optClass + '" ' + (answered ? 'disabled' : '') + ' onclick="selectAnswer(' + q.num + ',\'' + opt.letter + '\')">';
@@ -395,10 +469,12 @@ function renderBlock() {
       html += '</button>';
     });
     
-    const justClass = answered ? 'justification show' : 'justification';
+    const justClass = reveal ? 'justification show' : 'justification';
     html += '<div class="' + justClass + '" id="just-' + q.num + '">';
-    html += '<strong>' + (answered && isCorrect ? '✓ ¡Correcto!' : answered ? '✗ Respuesta correcta: ' + q.key : '') + '</strong> ';
-    html += esc(q.justification);
+    if (reveal) {
+      html += '<strong>' + (isCorrect ? '✓ ¡Correcto!' : '✗ Respuesta correcta: ' + q.key) + '</strong> ';
+      html += esc(q.justification);
+    }
     html += '</div>';
     
     html += '</div>';
@@ -412,7 +488,7 @@ function renderBlock() {
     if (!navBtn) return;
     navBtn.className = 'q-nav-btn';
     if (userAnswers[q.num] !== undefined) {
-      navBtn.classList.add(userAnswers[q.num] === q.key ? 'nav-correct' : 'nav-wrong');
+      navBtn.classList.add(contra ? 'nav-picked' : (userAnswers[q.num] === q.key ? 'nav-correct' : 'nav-wrong'));
     }
   }));
   // Mark current block
@@ -447,6 +523,7 @@ function selectAnswer(qNum, letter) {
   updateScoreboard();
   renderBlock();
   
+  if (contra) return;      // sin justificación que mostrar
   // Scroll to justification
   setTimeout(() => {
     const el = document.getElementById('just-' + qNum);
@@ -472,9 +549,15 @@ function nextBlock() {
   if (currentBlockIdx < blockOrder.length - 1) { currentBlockIdx++; renderBlock(); }
 }
 
-function showResults() {
+function showResults(porTiempo) {
+  const respondidas = correctCount + wrongCount;
+  if (contra && !porTiempo && !respondidas) { alert('Todavía no has respondido ninguna.'); return; }
+  const segs = contra ? transcurrido() : 0;
+  if (contra) { pararReloj(); document.getElementById('pill-reloj').classList.add('hidden'); }
   document.getElementById('screen-quiz').classList.add('hidden');
-  const total = 46;
+  // con reloj, lo que no alcanzaste no cuenta
+  const total = contra ? (respondidas || 1) : 46;
+  const sinResp = 46 - respondidas;
   const pct = Math.round(correctCount / total * 100);
   let emoji = pct >= 80 ? '🏆' : pct >= 60 ? '📈' : '📚';
   let msg = pct >= 80 ? '¡Excelente dominio!' : pct >= 60 ? 'Buen avance, refuerza los errores.' : 'Necesitas repasar más casos.';
@@ -486,7 +569,26 @@ function showResults() {
   html += '<div class="results-bar">';
   html += '<span class="score-pill correct">✓ ' + correctCount + ' correctas</span>';
   html += '<span class="score-pill wrong">✗ ' + wrongCount + ' incorrectas</span>';
+  if (contra) html += '<span class="score-pill pending">◻ ' + sinResp + ' sin alcanzar</span>';
   html += '</div>';
+  if (contra && respondidas) {
+    html += '<div class="big-label" style="margin-top:.4rem">' + correctCount + ' de ' + respondidas +
+            ' sobre lo que alcanzaste</div>';
+    const porPreg = segs / respondidas;
+    const proy = Math.min(140, porPreg > 0 ? Math.round(300*60/porPreg) : 140);
+    const mm = Math.floor(porPreg/60), ss = Math.round(porPreg%60);
+    html += '<div class="ritmo">' +
+      '<div><b>' + respondidas + ' / 46</b><span>alcanzadas</span></div>' +
+      '<div><b>' + mmss(segs) + '</b><span>tiempo usado</span></div>' +
+      '<div><b>' + (mm ? mm + 'm ' : '') + ss + 's</b><span>por pregunta</span></div>' +
+      '<div><b>' + proy + '</b><span>alcanzarías en 5 h</span></div></div>' +
+      '<p style="font-size:.85rem;color:var(--text-muted);margin-top:.7rem;text-align:left">' +
+      (proy >= 140
+        ? 'A este ritmo <b>terminas las 140</b> de la prueba real dentro de las cinco horas, y te sobraría ' + durLarga(Math.max(0, 300*60 - porPreg*140)) + '.'
+        : 'A este ritmo llegarías a <b>' + proy + ' de 140</b> en la prueba real y dejarías <b>' + (140-proy) + ' sin responder</b>. El examen exige 2 min 9 s por pregunta.') +
+      (sinResp ? ' Las ' + sinResp + ' que no alcanzaste no cuentan ni a favor ni en contra.' : '') +
+      '</p>';
+  }
   
   // Review wrong answers
   let wrongs = [];
@@ -517,6 +619,9 @@ function showResults() {
 }
 
 function restart() {
+  pararReloj(); contra = false; limite = 0; gastado = 0;
+  ['pill-correct','pill-wrong','pill-pct'].forEach(id => document.getElementById(id).classList.remove('hidden'));
+  document.getElementById('pill-reloj').classList.add('hidden');
   document.getElementById('screen-results').classList.add('hidden');
   document.getElementById('screen-quiz').classList.add('hidden');
   document.getElementById('app-scoreboard').classList.add('hidden');
@@ -525,6 +630,9 @@ function restart() {
 }
 
 function reviewAll() {
+  pararReloj(); contra = false; limite = 0;   // al repasar sí se ven las claves
+  document.getElementById('pill-reloj').classList.add('hidden');
+  ['pill-correct','pill-wrong','pill-pct'].forEach(id => document.getElementById(id).classList.remove('hidden'));
   document.getElementById('screen-results').classList.add('hidden');
   document.getElementById('screen-quiz').classList.remove('hidden');
   currentBlockIdx = 0;
